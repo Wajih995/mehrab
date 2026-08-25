@@ -19,7 +19,7 @@ export function BrandStory() {
         <Reveal className="order-2 lg:order-1">
           <p className="eyebrow mb-3">Our Story</p>
           <h2 className="font-serif text-3xl leading-[1.1] md:text-4xl lg:text-[2.75rem]">
-            A house built on the arch — enduring, considered, precise
+            A house built on the arch — enduring, considered, precise  
           </h2>
           <div className="mt-5 space-y-4 text-sm leading-relaxed text-muted-foreground md:text-base">
             <p>
