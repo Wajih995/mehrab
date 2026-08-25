@@ -40,3 +40,6 @@ next-env.d.ts
 
 # prisma
 /prisma/generated
+
+# Demo-mode admin data (products/menus edited without a DB)
+.data/

@@ -13,7 +13,7 @@ import {
   parseFilters,
   type RawSearchParams,
 } from "@/lib/shop";
-import { collections as allCollections } from "@/lib/data/products";
+import { getMenuCategoryViews } from "@/lib/repositories/products";
 import type { Product } from "@/types";
 
 interface ShopViewProps {
@@ -28,7 +28,7 @@ interface ShopViewProps {
 }
 
 /** The complete product listing experience — filters, sort, results, paging. */
-export function ShopView({
+export async function ShopView({
   scope,
   searchParams,
   title,
@@ -37,7 +37,11 @@ export function ShopView({
   hideCollections,
 }: ShopViewProps) {
   const filters = parseFilters(searchParams);
-  const facets = buildFacets(scope, allCollections);
+  const menuCats = await getMenuCategoryViews();
+  const facets = buildFacets(
+    scope,
+    menuCats.map((c) => ({ slug: c.slug, name: c.label }))
+  );
   const { items, total, page, totalPages } = filterProducts(scope, filters);
 
   return (

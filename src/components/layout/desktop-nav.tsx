@@ -6,12 +6,18 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
-import { mainNav } from "@/lib/navigation";
+import type { MegaMenuSection } from "@/types";
 import { cn } from "@/lib/utils";
 import { easeLuxe } from "@/lib/motion";
 
 /** Desktop primary navigation with hover-driven mega menu. */
-export function DesktopNav({ dark = false }: { dark?: boolean }) {
+export function DesktopNav({
+  nav,
+  dark = false,
+}: {
+  nav: MegaMenuSection[];
+  dark?: boolean;
+}) {
   const [active, setActive] = useState<string | null>(null);
 
   return (
@@ -21,9 +27,26 @@ export function DesktopNav({ dark = false }: { dark?: boolean }) {
       aria-label="Primary"
     >
       <ul className="flex items-center gap-8">
-        {mainNav.map((section) => {
-          const hasMenu = Boolean(section.columns || section.featured);
+        {nav.map((section) => {
+          const hasMenu =
+            !section.disabled &&
+            Boolean(section.columns?.length || section.featured);
           const isActive = active === section.label;
+          if (section.disabled) {
+            return (
+              <li key={section.label} className="py-6">
+                <span
+                  aria-disabled="true"
+                  className={cn(
+                    "inline-flex cursor-not-allowed items-center gap-1 text-2xs font-medium uppercase tracking-wide2",
+                    dark ? "text-sand-50/40" : "text-foreground/35"
+                  )}
+                >
+                  {section.label}
+                </span>
+              </li>
+            );
+          }
           return (
             <li
               key={section.label}
@@ -87,14 +110,14 @@ export function DesktopNav({ dark = false }: { dark?: boolean }) {
                       {section.featured && (
                         <Link
                           href={section.featured.href}
-                          className="group relative col-span-4 aspect-[4/3] overflow-hidden rounded-lg"
+                          className="group relative col-span-4 aspect-[5/4] overflow-hidden rounded-lg"
                         >
                           <Image
                             src={section.featured.image}
                             alt={section.featured.title}
                             fill
                             sizes="400px"
-                            className="object-cover transition-transform duration-700 ease-luxe group-hover:scale-105"
+                            className="object-cover object-top transition-transform duration-700 ease-luxe group-hover:scale-105"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-charcoal-950/80 via-charcoal-950/10 to-transparent" />
                           <div className="absolute inset-x-5 bottom-5 text-sand-50">

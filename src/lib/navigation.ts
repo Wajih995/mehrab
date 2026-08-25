@@ -1,7 +1,13 @@
 import type { MegaMenuSection, NavItem } from "@/types";
 import { img } from "@/lib/data/images";
 
-/** Primary navigation with mega-menu content. */
+/**
+ * Default primary navigation with mega-menu content.
+ *
+ * NOTE: this is only the SEED. The live menu is served by
+ * `@/lib/repositories/navigation` (admin-editable — demo store or DB),
+ * so storefront components must receive nav via props, not import this.
+ */
 export const mainNav: MegaMenuSection[] = [
   {
     label: "New In",
@@ -9,26 +15,17 @@ export const mainNav: MegaMenuSection[] = [
     columns: [
       {
         heading: "Latest",
-        items: [
-          { label: "New Arrivals", href: "/collections/new-arrivals" },
-          { label: "This Week's Drop", href: "/collections/weekly-drop" },
-          { label: "Back in Stock", href: "/collections/back-in-stock" },
-        ],
+        items: [{ label: "New Arrivals", href: "/collections/new-arrivals" }],
       },
       {
         heading: "Shop By Fabric",
-        items: [
-          { label: "Wash & Wear", href: "/shop?fabric=Wash+%26+Wear" },
-          { label: "Egyptian Cotton", href: "/shop?fabric=Egyptian+Cotton" },
-          { label: "Boski", href: "/shop?fabric=Boski" },
-          { label: "Karandi", href: "/shop?fabric=Karandi" },
-        ],
+        items: [{ label: "Wash & Wear", href: "/collections/wash-and-wear" }],
       },
     ],
     featured: {
       title: "The Winter Heritage Collection",
       href: "/collections/winter-heritage",
-      image: img("blueKurta", 800),
+      image: img("navyQuarter"),
       cta: "Explore the collection",
     },
   },
@@ -38,28 +35,15 @@ export const mainNav: MegaMenuSection[] = [
     columns: [
       {
         heading: "Collections",
-        items: [
-          { label: "Signature Line", href: "/collections/signature" },
-          { label: "Premium", href: "/collections/premium" },
-          { label: "Everyday Essentials", href: "/collections/essentials" },
-          { label: "Festive", href: "/collections/festive" },
-        ],
+        items: [{ label: "Premium", href: "/collections/premium" }],
       },
       {
         heading: "By Season",
-        items: [
-          { label: "Summer", href: "/shop?season=Summer" },
-          { label: "Winter", href: "/shop?season=Winter" },
-          { label: "All Season", href: "/shop?season=All+Season" },
-        ],
+        items: [{ label: "Summer", href: "/collections/summer" }],
       },
       {
         heading: "Price",
-        items: [
-          { label: "Under Rs 8,000", href: "/shop?max=8000" },
-          { label: "Rs 8,000 – 15,000", href: "/shop?min=8000&max=15000" },
-          { label: "Premium — Rs 15,000+", href: "/shop?min=15000" },
-        ],
+        items: [{ label: "Under Rs 8,000", href: "/shop?max=8000" }],
       },
     ],
   },
@@ -70,27 +54,21 @@ export const mainNav: MegaMenuSection[] = [
       {
         heading: "Featured",
         items: [
-          { label: "Winter Heritage", href: "/collections/winter-heritage" },
-          { label: "The Noor Edit", href: "/collections/noor" },
-          { label: "Monochrome", href: "/collections/monochrome" },
-          { label: "Wedding & Occasion", href: "/collections/occasion" },
+          { label: "Summer Heritage", href: "/collections/summer-heritage" },
         ],
       },
     ],
     featured: {
       title: "Signature Line",
       href: "/collections/signature",
-      image: img("blackHero", 800),
+      image: img("blackDetail"),
       cta: "Discover Signature",
     },
   },
   {
-    label: "Fabrics",
-    href: "/fabrics",
-  },
-  {
     label: "Our Story",
     href: "/about",
+    disabled: true,
   },
 ];
 

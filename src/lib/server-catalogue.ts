@@ -1,6 +1,7 @@
 import "server-only";
 
 import { products as seed } from "@/lib/data/products";
+import { loadJson, saveJson } from "@/lib/server-persist";
 import type { Product } from "@/types";
 
 /**
@@ -18,9 +19,14 @@ const globalForCatalogue = globalThis as unknown as {
 
 function ensure(): Product[] {
   if (!globalForCatalogue.__mehrabCatalogue) {
-    globalForCatalogue.__mehrabCatalogue = seed.map((p) => ({ ...p }));
+    globalForCatalogue.__mehrabCatalogue =
+      loadJson<Product[]>("catalogue") ?? seed.map((p) => ({ ...p }));
   }
   return globalForCatalogue.__mehrabCatalogue;
+}
+
+function persist(): void {
+  saveJson("catalogue", ensure());
 }
 
 export function readCatalogue(): Product[] {
@@ -37,6 +43,7 @@ export function findById(id: string): Product | null {
 
 export function addToCatalogue(product: Product): void {
   ensure().unshift(product);
+  persist();
 }
 
 export function updateInCatalogue(id: string, product: Product): void {
@@ -44,8 +51,10 @@ export function updateInCatalogue(id: string, product: Product): void {
   const i = c.findIndex((p) => p.id === id);
   if (i >= 0) c[i] = product;
   else c.unshift(product);
+  persist();
 }
 
 export function removeFromCatalogue(id: string): void {
   globalForCatalogue.__mehrabCatalogue = ensure().filter((p) => p.id !== id);
+  persist();
 }

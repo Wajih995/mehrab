@@ -12,7 +12,7 @@ export function PremiumBanner() {
       <div className="grid overflow-hidden rounded-xl bg-charcoal-950 text-sand-50 lg:grid-cols-2">
         <div className="relative min-h-[320px] lg:min-h-[520px]">
           <Image
-            src={img("whiteInterior", 1200)}
+            src={img("greenQuarter")}
             alt="MEHRAB Premium line shalwar kameez detail"
             fill
             sizes="(max-width: 1024px) 100vw, 50vw"

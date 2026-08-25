@@ -3,6 +3,9 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { isDbConfigured } from "@/lib/env";
 import * as demo from "@/lib/data/products";
+import { getMainNav } from "@/lib/repositories/navigation";
+import { menuCategories } from "@/lib/menu-categories";
+import { kameez } from "@/lib/data/images";
 import {
   readCatalogue,
   findBySlug as catalogueFindBySlug,
@@ -154,22 +157,22 @@ export async function getCollectionView(
     "new-arrivals": {
       title: "New Arrivals",
       description: "The latest additions to the MEHRAB line, fresh from the atelier.",
-      filter: (p) => !!p.isNew,
+      filter: (p) => !!p.isNew || p.collectionSlugs.includes("new-arrivals"),
     },
     "best-sellers": {
       title: "Best Sellers",
       description: "The pieces our customers return for, again and again.",
-      filter: (p) => !!p.isBestSeller,
+      filter: (p) => !!p.isBestSeller || p.collectionSlugs.includes("best-sellers"),
     },
     "back-in-stock": {
       title: "Back in Stock",
       description: "Sought-after pieces, returned to the rail.",
-      filter: (p) => p.inStock,
+      filter: (p) => p.inStock || p.collectionSlugs.includes("back-in-stock"),
     },
     "weekly-drop": {
       title: "This Week's Drop",
       description: "A tightly curated edit, refreshed each week.",
-      filter: (p) => !!p.isNew,
+      filter: (p) => !!p.isNew || p.collectionSlugs.includes("weekly-drop"),
     },
   };
 
@@ -185,17 +188,82 @@ export async function getCollectionView(
 
   const collections = await getCollections();
   const col = collections.find((c) => c.slug === slug);
-  if (!col) return null;
+  if (col) {
+    return {
+      slug,
+      title: col.name,
+      description: col.description,
+      image: col.image,
+      products: all.filter((p) => p.collectionSlugs.includes(slug)),
+    };
+  }
+
+  // Menu-derived virtual category: any nav item pointing at /collections/<slug>
+  // resolves to a page, so admin-created menu items work with zero extra setup.
+  // Products match by explicit assignment, or by fabric/season equal to the
+  // menu label (so e.g. "Wash & Wear" is populated out of the box).
+  const cat = menuCategories(await getMainNav()).find((c) => c.slug === slug);
+  if (!cat) return null;
   return {
     slug,
-    title: col.name,
-    description: col.description,
-    image: col.image,
-    products: all.filter((p) => p.collectionSlugs.includes(slug)),
+    title: cat.label,
+    description: `${cat.label} — from the MEHRAB line.`,
+    products: all.filter(
+      (p) =>
+        p.collectionSlugs.includes(slug) ||
+        p.fabric === cat.label ||
+        p.season === cat.label
+    ),
   };
 }
 
 export const allCollectionSlugs = demo.allCollectionSlugs;
+
+/** A menu category resolved against the live catalogue — for browse UIs. */
+export interface MenuCategoryView {
+  slug: string;
+  label: string;
+  href: string;
+  image: string;
+  count: number;
+}
+
+/** Placeholder imagery for categories that have no products yet. */
+const CATEGORY_FALLBACKS = [
+  kameez.blackQuarter,
+  kameez.greyDetail,
+  kameez.navyFull,
+  kameez.whiteQuarter,
+  kameez.greenFull,
+  kameez.whiteDetail,
+];
+
+/**
+ * Every category in the live main nav, with its product count and a cover
+ * image (first product in the category, else a rotating brand placeholder).
+ * This is what homepage/collections browse sections should render, so they
+ * always mirror the admin-managed menu.
+ */
+export async function getMenuCategoryViews(): Promise<MenuCategoryView[]> {
+  const nav = await getMainNav();
+  const cats = menuCategories(nav);
+  const views = await Promise.all(
+    cats.map(async (c, i) => {
+      const view = await getCollectionView(c.slug);
+      const products = view?.products ?? [];
+      return {
+        slug: c.slug,
+        label: c.label,
+        href: `/collections/${c.slug}`,
+        image:
+          products[0]?.images[0]?.url ??
+          (view?.image || CATEGORY_FALLBACKS[i % CATEGORY_FALLBACKS.length]),
+        count: products.length,
+      };
+    })
+  );
+  return views;
+}
 
 export async function getProductReviews(
   productId: string,

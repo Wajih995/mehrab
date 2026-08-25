@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
+  ListTree,
   Package,
   ShoppingBag,
   Users,
@@ -40,6 +41,7 @@ const NAV: NavItem[] = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Orders", href: "/admin/orders", icon: ShoppingBag },
   { label: "Products", href: "/admin/products", icon: Package },
+  { label: "Menus", href: "/admin/menus", icon: ListTree },
   { label: "Customers", href: "/admin/customers", icon: Users, disabled: true },
   { label: "Coupons", href: "/admin/coupons", icon: Ticket, disabled: true },
   { label: "Reviews", href: "/admin/reviews", icon: Star, disabled: true },

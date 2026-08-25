@@ -1,4 +1,4 @@
-import type { Collection, Product } from "@/types";
+import type { Product } from "@/types";
 
 /** Raw Next.js searchParams shape. */
 export type RawSearchParams = Record<string, string | string[] | undefined>;
@@ -70,7 +70,10 @@ export function parseFilters(sp: RawSearchParams): ParsedFilters {
 }
 
 /** Facets (available filter options) derived from the catalogue. */
-export function buildFacets(products: Product[], collections: Collection[]) {
+export function buildFacets(
+  products: Product[],
+  collections: { slug: string; name: string }[]
+) {
   const fabrics = new Set<string>();
   const colors = new Map<string, string>();
   const sizes = new Set<string>();
@@ -97,7 +100,9 @@ export function buildFacets(products: Product[], collections: Collection[]) {
     ),
     seasons: [...seasons].sort(),
     collections: collections.map((c) => ({ slug: c.slug, name: c.name })),
-    priceRange: [Math.floor(min), Math.ceil(max)] as [number, number],
+    priceRange: (products.length
+      ? [Math.floor(min), Math.ceil(max)]
+      : [0, 0]) as [number, number],
   };
 }
 

@@ -12,8 +12,9 @@ import { selectCartCount, useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
 import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
+import type { MegaMenuSection } from "@/types";
 
-export function Header() {
+export function Header({ nav }: { nav: MegaMenuSection[] }) {
   const [scrolled, setScrolled] = useState(false);
   const mounted = useMounted();
   const cartCount = useCart(selectCartCount);
@@ -39,7 +40,7 @@ export function Header() {
       <div className="container flex items-center justify-between gap-4">
         {/* Left cluster */}
         <div className="flex items-center gap-1 lg:flex-1">
-          <MobileMenu />
+          <MobileMenu nav={nav} />
           <Button
             variant="ghost"
             size="icon"
@@ -119,7 +120,7 @@ export function Header() {
       {/* Secondary nav row (desktop) */}
       <div className="hidden border-t border-border/60 lg:block">
         <div className="container flex justify-center">
-          <DesktopNav />
+          <DesktopNav nav={nav} />
         </div>
       </div>
     </header>

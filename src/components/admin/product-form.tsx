@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { collections } from "@/lib/data/products";
+import type { MenuCategory } from "@/lib/menu-categories";
 import { cn, slugify } from "@/lib/utils";
 import type {
   FabricType,
@@ -48,9 +48,11 @@ const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
 interface ProductFormProps {
   /** Existing product for edit mode; omit to create. */
   product?: Product;
+  /** Assignable categories, derived from the live main navigation. */
+  categories: MenuCategory[];
 }
 
-export function ProductForm({ product }: ProductFormProps) {
+export function ProductForm({ product, categories }: ProductFormProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const isEdit = Boolean(product);
@@ -374,15 +376,21 @@ export function ProductForm({ product }: ProductFormProps) {
                 </Select>
               </FieldRow>
               <div>
-                <Label className="mb-2 block text-xs text-muted-foreground">Collections</Label>
+                <Label className="mb-2 block text-xs text-muted-foreground">
+                  Menu categories
+                </Label>
+                <p className="mb-3 text-xs text-muted-foreground/80">
+                  Where this product appears — one checkbox per menu item.
+                  Manage the list under Admin → Menus.
+                </p>
                 <div className="space-y-2">
-                  {collections.map((c) => (
+                  {categories.map((c) => (
                     <label key={c.slug} className="flex cursor-pointer items-center gap-2.5 text-sm">
                       <Checkbox
                         checked={collectionSlugs.includes(c.slug)}
                         onCheckedChange={() => toggleCollection(c.slug)}
                       />
-                      {c.name}
+                      {c.label}
                     </label>
                   ))}
                 </div>

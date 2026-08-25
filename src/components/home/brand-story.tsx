@@ -56,7 +56,7 @@ export function BrandStory() {
         <Reveal className="order-1 lg:order-2">
           <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted">
             <Image
-              src={img("earthKurta", 1000)}
+              src={img("greenFull")}
               alt="MEHRAB shalwar kameez, hand-finished in the atelier"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"

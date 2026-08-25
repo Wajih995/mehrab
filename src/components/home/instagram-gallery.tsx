@@ -9,12 +9,12 @@ import { fadeUp } from "@/lib/motion";
 import { img, type KameezImageKey } from "@/lib/data/images";
 
 const posts: KameezImageKey[] = [
-  "whiteWall",
-  "blackHero",
-  "blueKurta",
-  "whitePose",
-  "earthKurta",
-  "whiteShades",
+  "whiteFull",
+  "blackDetail",
+  "navyFull",
+  "greenQuarter",
+  "whiteDetail",
+  "greyDetail",
 ];
 
 /** Shoppable social feed placeholder — swap for the Instagram API later. */
@@ -38,7 +38,7 @@ export function InstagramGallery() {
               className="group relative block aspect-square overflow-hidden rounded-md bg-muted"
             >
               <Image
-                src={img(key, 500)}
+                src={img(key)}
                 alt="MEHRAB shalwar kameez on Instagram"
                 fill
                 sizes="(max-width: 768px) 33vw, 16vw"

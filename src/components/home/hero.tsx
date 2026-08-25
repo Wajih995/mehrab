@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
-import { img } from "@/lib/data/images";
+import { brand } from "@/lib/data/images";
 import { easeLuxe } from "@/lib/motion";
 
 /** Fullscreen editorial hero — the brand's first impression. */
@@ -13,8 +13,8 @@ export function Hero() {
   return (
     <section className="relative h-[88vh] min-h-[560px] w-full overflow-hidden bg-charcoal-950 text-sand-50">
       <Image
-        src={img("heroWide", 1920)}
-        alt="Model wearing the MEHRAB charcoal shalwar kameez"
+        src={brand.heroBanner}
+        alt="MEHRAB — Elevate Tradition: kameez on an atelier rail beside folded fabrics"
         fill
         priority
         sizes="100vw"

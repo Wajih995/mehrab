@@ -125,6 +125,8 @@ export interface MegaMenuColumn {
 export interface MegaMenuSection {
   label: string;
   href: string;
+  /** Render the item greyed-out and non-clickable (kept in the nav for later). */
+  disabled?: boolean;
   columns?: MegaMenuColumn[];
   featured?: {
     title: string;

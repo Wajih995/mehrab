@@ -61,8 +61,23 @@ function imageCreate(product: Product) {
   }));
 }
 
-function collectionConnect(product: Product) {
-  return product.collectionSlugs.map((slug) => ({ slug }));
+/** Humanise a category slug for an auto-created Collection row. */
+function slugToName(slug: string) {
+  return slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+/**
+ * Menu items can define brand-new categories, so collections referenced by a
+ * product may not exist yet — create them on the fly instead of failing.
+ */
+function collectionConnectOrCreate(product: Product) {
+  return product.collectionSlugs.map((slug) => ({
+    where: { slug },
+    create: { slug, name: slugToName(slug), description: "", image: "" },
+  }));
 }
 
 /** Create or update a product (admin). */
@@ -84,7 +99,10 @@ export async function saveProduct(
         data: {
           ...scalarData(product),
           images: { deleteMany: {}, create: imageCreate(product) },
-          collections: { set: collectionConnect(product) },
+          collections: {
+            set: [],
+            connectOrCreate: collectionConnectOrCreate(product),
+          },
         },
       });
     } else {
@@ -92,7 +110,7 @@ export async function saveProduct(
         data: {
           ...scalarData(product),
           images: { create: imageCreate(product) },
-          collections: { connect: collectionConnect(product) },
+          collections: { connectOrCreate: collectionConnectOrCreate(product) },
         },
       });
     }

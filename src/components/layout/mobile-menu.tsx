@@ -19,11 +19,11 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/layout/logo";
-import { mainNav } from "@/lib/navigation";
+import type { MegaMenuSection } from "@/types";
 import { siteConfig } from "@/lib/site";
 
 /** Hamburger-triggered slide-out navigation for small screens. */
-export function MobileMenu() {
+export function MobileMenu({ nav }: { nav: MegaMenuSection[] }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -47,8 +47,20 @@ export function MobileMenu() {
 
         <div className="flex-1 overflow-y-auto px-6">
           <Accordion type="multiple" className="w-full">
-            {mainNav.map((section) => {
-              const hasChildren = Boolean(section.columns);
+            {nav.map((section) => {
+              if (section.disabled) {
+                return (
+                  <div key={section.label} className="border-b border-border">
+                    <span
+                      aria-disabled="true"
+                      className="flex cursor-not-allowed py-4 text-sm font-medium text-muted-foreground/50"
+                    >
+                      {section.label}
+                    </span>
+                  </div>
+                );
+              }
+              const hasChildren = Boolean(section.columns?.length);
               if (!hasChildren) {
                 return (
                   <div key={section.label} className="border-b border-border">

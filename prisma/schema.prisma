@@ -252,3 +252,11 @@ model Coupon {
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
 }
+
+// ─── Site navigation (admin-editable menus) ─────────────────
+model SiteMenu {
+  id        String   @id @default(cuid())
+  key       String   @unique // e.g. "main-nav"
+  data      Json // MegaMenuSection[] — same shape the storefront renders
+  updatedAt DateTime @updatedAt
+}

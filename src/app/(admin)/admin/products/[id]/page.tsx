@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import { ProductForm } from "@/components/admin/product-form";
 import { getProductById } from "@/lib/repositories/products";
+import { menuCategories } from "@/lib/menu-categories";
+import { getMainNav } from "@/lib/repositories/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +13,7 @@ export default async function EditProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const product = await getProductById(id);
+  const [product, nav] = await Promise.all([getProductById(id), getMainNav()]);
 
   if (!product) {
     return (
@@ -27,5 +29,5 @@ export default async function EditProductPage({
     );
   }
 
-  return <ProductForm product={product} />;
+  return <ProductForm product={product} categories={menuCategories(nav)} />;
 }

@@ -1,13 +1,16 @@
 import type { MetadataRoute } from "next";
 
 import { siteConfig } from "@/lib/site";
-import { getProducts, getCollections } from "@/lib/repositories/products";
+import {
+  getProducts,
+  getMenuCategoryViews,
+} from "@/lib/repositories/products";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const [products, collections] = await Promise.all([
+  const [products, categories] = await Promise.all([
     getProducts(),
-    getCollections(),
+    getMenuCategoryViews(),
   ]);
 
   const staticRoutes = [
@@ -35,8 +38,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const collectionRoutes = collections.map((c) => ({
-    url: `${siteConfig.url}/collections/${c.slug}`,
+  const collectionRoutes = categories.map((c) => ({
+    url: `${siteConfig.url}${c.href}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.6,
