@@ -45,13 +45,15 @@ export function FilterPanel({ facets, hideCollections }: FilterPanelProps) {
 
   return (
     <Accordion type="multiple" defaultValue={defaultOpen} className="w-full">
-      {/* Price */}
-      <AccordionItem value="price">
-        <AccordionTrigger>Price</AccordionTrigger>
-        <AccordionContent>
-          <PriceFilter range={facets.priceRange} />
-        </AccordionContent>
-      </AccordionItem>
+      {/* Price — hidden when the catalogue has no price spread */}
+      {facets.priceRange[0] < facets.priceRange[1] && (
+        <AccordionItem value="price">
+          <AccordionTrigger>Price</AccordionTrigger>
+          <AccordionContent>
+            <PriceFilter range={facets.priceRange} />
+          </AccordionContent>
+        </AccordionItem>
+      )}
 
       {/* Checkbox groups */}
       {groups.map((group) => {
@@ -194,7 +196,7 @@ function PriceFilter({ range }: { range: [number, number] }) {
   };
 
   return (
-    <div className="pt-1">
+    <div className="px-3 pt-1">
       <Slider
         value={local}
         min={min}

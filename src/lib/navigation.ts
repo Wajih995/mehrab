@@ -35,15 +35,14 @@ export const mainNav: MegaMenuSection[] = [
     columns: [
       {
         heading: "Collections",
-        items: [{ label: "Premium", href: "/collections/premium" }],
+        items: [
+          { label: "Premium", href: "/collections/premium" },
+          { label: "Unstitched", href: "/collections/unstitched" },
+        ],
       },
       {
         heading: "By Season",
         items: [{ label: "Summer", href: "/collections/summer" }],
-      },
-      {
-        heading: "Price",
-        items: [{ label: "Under Rs 8,000", href: "/shop?max=8000" }],
       },
     ],
   },
