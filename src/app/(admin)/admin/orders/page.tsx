@@ -1,6 +1,10 @@
 import { OrdersTable } from "@/components/admin/orders-table";
+import { getOrders } from "@/lib/repositories/orders";
 
-export default function AdminOrdersPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminOrdersPage() {
+  const orders = await getOrders();
   return (
     <div>
       <div className="mb-6">
@@ -9,7 +13,7 @@ export default function AdminOrdersPage() {
           Manage and fulfil customer orders.
         </p>
       </div>
-      <OrdersTable />
+      <OrdersTable orders={orders} />
     </div>
   );
 }

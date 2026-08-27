@@ -1,10 +1,13 @@
 "use client";
 
+import { useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Printer } from "lucide-react";
 import { toast } from "sonner";
 
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   Select,
@@ -14,31 +17,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
+import { updateOrderStatus } from "@/actions/orders";
 import {
-  useOrders,
   ORDER_STATUSES,
+  type OrderRecord,
   type OrderStatus,
-} from "@/hooks/use-orders";
-import { useMounted } from "@/hooks/use-mounted";
+} from "@/lib/orders-shared";
 import { formatPrice, formatDate } from "@/lib/utils";
 
-export function OrderDetail({ orderNumber }: { orderNumber: string }) {
-  const mounted = useMounted();
-  const order = useOrders((s) => s.orders.find((o) => o.orderNumber === orderNumber));
-  const updateStatus = useOrders((s) => s.updateStatus);
+export function OrderDetail({ order }: { order: OrderRecord }) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
 
-  if (!mounted) return <div className="min-h-[40vh]" />;
-
-  if (!order) {
-    return (
-      <div className="py-16 text-center">
-        <p className="font-serif text-2xl">Order not found</p>
-        <Link href="/admin/orders" className="mt-3 inline-block text-sm text-brass hover:underline">
-          ← Back to orders
-        </Link>
-      </div>
-    );
-  }
+  const handleStatus = (status: OrderStatus) =>
+    startTransition(async () => {
+      const res = await updateOrderStatus(order.orderNumber, status);
+      if (res.ok) {
+        toast.success(`Order marked as ${status}`);
+        router.refresh();
+      } else {
+        toast.error(res.error ?? "Update failed");
+      }
+    });
 
   return (
     <div className="space-y-6">
@@ -59,14 +59,16 @@ export function OrderDetail({ orderNumber }: { orderNumber: string }) {
             Placed {formatDate(order.placedAt)}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Update status</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button asChild variant="outline">
+            <Link href={`/admin/orders/${order.orderNumber}/receipt`}>
+              <Printer className="size-4" /> Generate bill
+            </Link>
+          </Button>
           <Select
             value={order.status}
-            onValueChange={(v) => {
-              updateStatus(order.orderNumber, v as OrderStatus);
-              toast.success(`Order marked as ${v}`);
-            }}
+            disabled={pending}
+            onValueChange={(v) => handleStatus(v as OrderStatus)}
           >
             <SelectTrigger className="w-40">
               <SelectValue />
@@ -90,7 +92,7 @@ export function OrderDetail({ orderNumber }: { orderNumber: string }) {
           </p>
           <ul className="divide-y divide-border">
             {order.items.map((item) => (
-              <li key={`${item.productId}-${item.size}-${item.color}`} className="flex gap-4 p-5">
+              <li key={`${item.slug}-${item.size}-${item.color}`} className="flex gap-4 p-5">
                 <div className="relative aspect-[3/4] w-16 shrink-0 overflow-hidden rounded-md bg-muted">
                   <Image src={item.image} alt={item.name} fill sizes="64px" className="object-cover object-top" />
                 </div>
@@ -133,11 +135,21 @@ export function OrderDetail({ orderNumber }: { orderNumber: string }) {
             <p className="text-muted-foreground">
               {order.city}, {order.province}
             </p>
+            {order.notes && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Note: {order.notes}
+              </p>
+            )}
           </Panel>
           <Panel title="Payment">
             <p className="font-medium">
               {order.paymentMethod === "cod" ? "Cash on Delivery" : "Card / Wallet"}
             </p>
+            {order.couponCode && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Coupon: {order.couponCode}
+              </p>
+            )}
           </Panel>
         </div>
       </div>

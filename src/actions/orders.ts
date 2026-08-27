@@ -1,9 +1,15 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
+import type { OrderStatus as DbOrderStatus } from "@prisma/client";
+
 import { prisma } from "@/lib/db";
 import { isDbConfigured } from "@/lib/env";
 import { computeTotals, validateCoupon, type OrderTotals } from "@/lib/checkout";
 import { placeOrderSchema, type PlaceOrderInput } from "@/lib/validations/checkout";
+import { addOrder, setOrderStatus } from "@/lib/server-orders";
+import { ORDER_STATUSES, type OrderStatus } from "@/lib/orders-shared";
 
 export interface PlaceOrderResult {
   ok: boolean;
@@ -22,13 +28,18 @@ function generateOrderNumber(): string {
   return `MEH-${stamp}-${rand}`;
 }
 
+/** Refresh admin surfaces that render order data. */
+function revalidateOrders() {
+  revalidatePath("/admin");
+  revalidatePath("/admin/orders");
+  revalidatePath("/admin/orders/[orderNumber]", "page");
+}
+
 /**
- * Place an order. Validates input, recomputes totals authoritatively
- * (never trust client-sent prices), and returns a confirmation.
- *
- * TODO(backend): persist to Postgres via Prisma, decrement inventory,
- * send confirmation email, and — for card payments — create a Stripe
- * PaymentIntent and return its client secret instead of confirming here.
+ * Place an order (COD). Validates input, recomputes totals authoritatively
+ * (never trust client-sent prices), persists server-side — Postgres when
+ * DATABASE_URL is set, the demo file store otherwise — and returns a
+ * confirmation.
  */
 export async function placeOrder(
   input: PlaceOrderInput
@@ -57,7 +68,7 @@ export async function placeOrder(
       data: {
         orderNumber,
         status: "CONFIRMED",
-        paymentMethod: customer.paymentMethod === "card" ? "CARD" : "COD",
+        paymentMethod: "COD",
         email: customer.email,
         fullName: `${customer.firstName} ${customer.lastName}`,
         phone: customer.phone,
@@ -88,9 +99,59 @@ export async function placeOrder(
     });
     // TODO(inventory): decrement stock; TODO(email): send confirmation.
   } else {
-    // Demo mode — simulate write latency of a real order pipeline.
-    await new Promise((r) => setTimeout(r, 600));
+    // Demo mode — persist to the server-side file store so the order
+    // reaches the admin panel (a different browser than the customer's).
+    addOrder({
+      orderNumber,
+      placedAt,
+      status: "Confirmed",
+      paymentMethod: "cod",
+      email: customer.email,
+      fullName: `${customer.firstName} ${customer.lastName}`,
+      phone: customer.phone,
+      address: customer.address,
+      city: customer.city,
+      province: customer.province,
+      postalCode: customer.postalCode || undefined,
+      notes: customer.notes || undefined,
+      couponCode: coupon?.code,
+      items: items.map((i) => ({ ...i, productId: i.productId ?? null })),
+      totals,
+    });
   }
 
+  revalidateOrders();
   return { ok: true, orderNumber, totals, placedAt };
+}
+
+export interface OrderStatusResult {
+  ok: boolean;
+  error?: string;
+}
+
+/** Update an order's fulfilment status (admin). */
+export async function updateOrderStatus(
+  orderNumber: string,
+  status: OrderStatus
+): Promise<OrderStatusResult> {
+  if (!ORDER_STATUSES.includes(status)) {
+    return { ok: false, error: "Unknown status." };
+  }
+  try {
+    if (!isDbConfigured) {
+      if (!setOrderStatus(orderNumber, status)) {
+        return { ok: false, error: "Order not found." };
+      }
+    } else {
+      await prisma.order.update({
+        where: { orderNumber },
+        data: { status: status.toUpperCase() as DbOrderStatus },
+      });
+    }
+    revalidateOrders();
+    return { ok: true };
+  } catch (err) {
+    console.error("updateOrderStatus failed", err);
+    return { ok: false, error: "Could not update the order." };
+  }
 }

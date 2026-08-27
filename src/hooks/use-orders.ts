@@ -5,16 +5,9 @@ import { persist } from "zustand/middleware";
 
 import type { CartItem } from "@/types";
 import type { OrderTotals } from "@/lib/checkout";
+import { ORDER_STATUSES, type OrderStatus } from "@/lib/orders-shared";
 
-export const ORDER_STATUSES = [
-  "Confirmed",
-  "Packed",
-  "Shipped",
-  "Delivered",
-  "Cancelled",
-] as const;
-
-export type OrderStatus = (typeof ORDER_STATUSES)[number];
+export { ORDER_STATUSES, type OrderStatus };
 
 export interface PlacedOrder {
   orderNumber: string;

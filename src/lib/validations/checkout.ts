@@ -30,7 +30,7 @@ export const checkoutSchema = z.object({
     .optional()
     .or(z.literal("")),
   notes: z.string().max(500).optional(),
-  paymentMethod: z.enum(["cod", "card"]),
+  paymentMethod: z.enum(["cod"]), // COD only — no online payment
   couponCode: z.string().optional(),
 });
 

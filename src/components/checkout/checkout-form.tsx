@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Banknote, CreditCard, Loader2, Lock, ShoppingBag } from "lucide-react";
+import { Banknote, Loader2, Lock, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { OrderSummary } from "@/components/cart/order-summary";
 import { useCart, selectSubtotal } from "@/hooks/use-cart";
 import { useOrders } from "@/hooks/use-orders";
@@ -191,21 +190,6 @@ export function CheckoutForm() {
                   title="Cash on Delivery"
                   desc="Pay in cash when your order arrives."
                 />
-                <label
-                  className={cn(
-                    "flex cursor-not-allowed items-center gap-3 rounded-lg border border-border p-4 opacity-60"
-                  )}
-                >
-                  <RadioGroupItem value="card" disabled />
-                  <CreditCard className="size-5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Card / Wallet</p>
-                    <p className="text-xs text-muted-foreground">
-                      Secure payment via Stripe.
-                    </p>
-                  </div>
-                  <Badge variant="muted">Coming soon</Badge>
-                </label>
               </RadioGroup>
             )}
           />

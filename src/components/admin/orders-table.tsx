@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, ShoppingBag } from "lucide-react";
+import { Printer, Search, ShoppingBag } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
 import {
   Select,
@@ -13,17 +14,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useOrders, ORDER_STATUSES } from "@/hooks/use-orders";
-import { useMounted } from "@/hooks/use-mounted";
+import { ORDER_STATUSES, type OrderRecord } from "@/lib/orders-shared";
 import { formatPrice, formatDate } from "@/lib/utils";
 
-export function OrdersTable() {
-  const mounted = useMounted();
-  const orders = useOrders((s) => s.orders);
+export function OrdersTable({ orders }: { orders: OrderRecord[] }) {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<string>("all");
-
-  if (!mounted) return <div className="min-h-[40vh]" />;
 
   const filtered = orders.filter((o) => {
     const matchesQ =
@@ -77,48 +73,64 @@ export function OrdersTable() {
                   <th className="px-5 py-3 font-medium">Payment</th>
                   <th className="px-5 py-3 font-medium">Status</th>
                   <th className="px-5 py-3 text-right font-medium">Total</th>
+                  <th className="px-5 py-3 text-right font-medium">Bill</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody>
                 {filtered.map((o) => (
-                  <tr key={o.orderNumber} className="group transition-colors hover:bg-secondary/40">
+                  <tr
+                    key={o.orderNumber}
+                    className="border-b border-border/60 transition-colors last:border-0 hover:bg-secondary/40"
+                  >
                     <td className="px-5 py-3.5">
                       <Link
                         href={`/admin/orders/${o.orderNumber}`}
-                        className="font-medium text-foreground group-hover:text-brass"
+                        className="font-medium text-brass hover:underline"
                       >
                         {o.orderNumber}
                       </Link>
-                      <p className="text-xs text-muted-foreground">
-                        {o.items.reduce((n, i) => n + i.quantity, 0)} items
-                      </p>
                     </td>
                     <td className="px-5 py-3.5">
                       <p className="font-medium">{o.fullName}</p>
-                      <p className="text-xs text-muted-foreground">{o.city}</p>
+                      <p className="text-xs text-muted-foreground">{o.email}</p>
                     </td>
                     <td className="px-5 py-3.5 text-muted-foreground">
                       {formatDate(o.placedAt)}
                     </td>
-                    <td className="px-5 py-3.5 text-muted-foreground">
-                      {o.paymentMethod === "cod" ? "COD" : "Card"}
-                    </td>
+                    <td className="px-5 py-3.5 uppercase">{o.paymentMethod}</td>
                     <td className="px-5 py-3.5">
                       <OrderStatusBadge status={o.status} />
                     </td>
                     <td className="px-5 py-3.5 text-right font-medium tabular-nums">
                       {formatPrice(o.totals.total)}
                     </td>
+                    <td className="px-5 py-3.5 text-right">
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Generate bill for ${o.orderNumber}`}
+                      >
+                        <Link href={`/admin/orders/${o.orderNumber}/receipt`}>
+                          <Printer className="size-4" />
+                        </Link>
+                      </Button>
+                    </td>
                   </tr>
                 ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={7}
+                      className="px-5 py-10 text-center text-muted-foreground"
+                    >
+                      No orders match that search.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
-          {filtered.length === 0 && (
-            <p className="p-8 text-center text-sm text-muted-foreground">
-              No orders match your filters.
-            </p>
-          )}
         </div>
       )}
     </div>
@@ -127,12 +139,12 @@ export function OrdersTable() {
 
 function EmptyOrders() {
   return (
-    <div className="flex flex-col items-center rounded-xl border border-dashed border-border py-20 text-center">
-      <div className="grid size-14 place-items-center rounded-full bg-secondary text-muted-foreground">
+    <div className="rounded-xl border border-dashed border-border py-16 text-center">
+      <div className="mx-auto grid size-14 place-items-center rounded-full bg-secondary text-muted-foreground">
         <ShoppingBag className="size-6" />
       </div>
       <p className="mt-4 font-serif text-xl">No orders yet</p>
-      <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+      <p className="mt-1 text-sm text-muted-foreground">
         Orders placed through the storefront checkout will appear here.
       </p>
     </div>

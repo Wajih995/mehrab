@@ -55,6 +55,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const isAuthed = useAdminAuth((s) => s.isAuthed);
 
   const isLogin = pathname === "/admin/login";
+  // Print pages render without the shell — the paper is the whole UI.
+  const isPrint = pathname.endsWith("/receipt");
 
   // Client-side route protection (stand-in for server middleware).
   useEffect(() => {
@@ -72,6 +74,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
+
+  if (isPrint) return <>{children}</>;
 
   return (
     <div className="min-h-dvh bg-secondary/30 lg:grid lg:grid-cols-[256px_1fr]">

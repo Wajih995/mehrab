@@ -11,18 +11,18 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { useOrders, ORDER_STATUSES } from "@/hooks/use-orders";
-import { useMounted } from "@/hooks/use-mounted";
+import { ORDER_STATUSES, type OrderRecord } from "@/lib/orders-shared";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
 import type { Product } from "@/types";
 
-export function DashboardOverview({ products }: { products: Product[] }) {
-  const mounted = useMounted();
-  const orders = useOrders((s) => s.orders);
-
-  if (!mounted) return <div className="min-h-[40vh]" />;
-
+export function DashboardOverview({
+  products,
+  orders,
+}: {
+  products: Product[];
+  orders: OrderRecord[];
+}) {
   const active = orders.filter((o) => o.status !== "Cancelled");
   const revenue = active.reduce((sum, o) => sum + o.totals.total, 0);
   const outOfStock = products.filter((p) => !p.inStock);

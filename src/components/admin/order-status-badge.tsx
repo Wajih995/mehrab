@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import type { OrderStatus } from "@/hooks/use-orders";
+import type { OrderStatus } from "@/lib/orders-shared";
 
 const STYLES: Record<OrderStatus, string> = {
   Confirmed: "bg-blue-500/12 text-blue-700 dark:text-blue-300",

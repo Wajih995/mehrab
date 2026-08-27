@@ -27,7 +27,7 @@ export const collections: Collection[] = [
     slug: "premium",
     name: "Premium",
     description: "Elevated fabrics and finishing for the discerning wardrobe.",
-    image: img("greyDetail"),
+    image: img("navyQuarter"),
     season: "All Season",
   },
   {
