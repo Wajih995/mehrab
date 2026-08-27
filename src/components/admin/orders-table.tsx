@@ -7,6 +7,7 @@ import { Printer, Search, ShoppingBag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
+import { WhatsAppButton } from "@/components/admin/whatsapp-button";
 import {
   Select,
   SelectContent,
@@ -69,10 +70,12 @@ export function OrdersTable({ orders }: { orders: OrderRecord[] }) {
                 <tr className="border-b border-border text-left text-xs uppercase tracking-wide2 text-muted-foreground">
                   <th className="px-5 py-3 font-medium">Order</th>
                   <th className="px-5 py-3 font-medium">Customer</th>
+                  <th className="px-5 py-3 font-medium">Sizes</th>
                   <th className="px-5 py-3 font-medium">Date</th>
                   <th className="px-5 py-3 font-medium">Payment</th>
                   <th className="px-5 py-3 font-medium">Status</th>
                   <th className="px-5 py-3 text-right font-medium">Total</th>
+                  <th className="px-5 py-3 text-right font-medium">Notify</th>
                   <th className="px-5 py-3 text-right font-medium">Bill</th>
                 </tr>
               </thead>
@@ -94,6 +97,24 @@ export function OrdersTable({ orders }: { orders: OrderRecord[] }) {
                       <p className="font-medium">{o.fullName}</p>
                       <p className="text-xs text-muted-foreground">{o.email}</p>
                     </td>
+                    <td className="px-5 py-3.5">
+                      <div className="flex flex-wrap gap-1">
+                        {o.items.map((i, n) => (
+                          <span
+                            key={`${i.slug}-${n}`}
+                            title={`${i.name} — ${i.color}`}
+                            className={
+                              i.custom
+                                ? "rounded border border-brass/50 bg-brass/10 px-1.5 py-0.5 text-2xs font-medium text-brass"
+                                : "rounded bg-secondary px-1.5 py-0.5 text-2xs font-medium"
+                            }
+                          >
+                            {i.size}
+                            {i.quantity > 1 && ` ×${i.quantity}`}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
                     <td className="px-5 py-3.5 text-muted-foreground">
                       {formatDate(o.placedAt)}
                     </td>
@@ -103,6 +124,9 @@ export function OrdersTable({ orders }: { orders: OrderRecord[] }) {
                     </td>
                     <td className="px-5 py-3.5 text-right font-medium tabular-nums">
                       {formatPrice(o.totals.total)}
+                    </td>
+                    <td className="px-5 py-3.5 text-right">
+                      <WhatsAppButton order={o} variant="ghost" iconOnly />
                     </td>
                     <td className="px-5 py-3.5 text-right">
                       <Button
@@ -121,7 +145,7 @@ export function OrdersTable({ orders }: { orders: OrderRecord[] }) {
                 {filtered.length === 0 && (
                   <tr>
                     <td
-                      colSpan={7}
+                      colSpan={9}
                       className="px-5 py-10 text-center text-muted-foreground"
                     >
                       No orders match that search.

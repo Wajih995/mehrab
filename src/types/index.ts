@@ -29,6 +29,19 @@ export interface ColorOption {
 
 export type SizeCode = "XS" | "S" | "M" | "L" | "XL" | "XXL" | "3XL";
 
+/** Sentinel size for made-to-order pieces cut to the customer's numbers. */
+export const CUSTOM_SIZE = "Custom";
+
+/** Made-to-order measurements, in inches. Keys match the size chart rows. */
+export interface CustomMeasurements {
+  collar: number;
+  shoulder: number;
+  chest: number;
+  sleeveLength: number;
+  length: number;
+  shalwarLength: number;
+}
+
 export type FabricType =
   | "Wash & Wear"
   | "Cotton"
@@ -106,9 +119,12 @@ export interface CartItem {
   name: string;
   image: string;
   price: Money;
-  size: SizeCode;
+  /** A chart size, or CUSTOM_SIZE when `custom` is supplied. */
+  size: SizeCode | typeof CUSTOM_SIZE;
   color: string;
   quantity: number;
+  /** Present only for made-to-order lines. */
+  custom?: CustomMeasurements;
 }
 
 export interface NavItem {

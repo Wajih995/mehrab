@@ -12,7 +12,12 @@ import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
 import { useMounted } from "@/hooks/use-mounted";
 import { cn, discountPercent, formatPrice } from "@/lib/utils";
-import type { Product } from "@/types";
+import {
+  CustomSizeFields,
+  type MeasurementDraft,
+} from "@/components/product/custom-size-fields";
+import { CUSTOM_FIELDS, MEASUREMENT_LIMITS } from "@/lib/data/size-chart";
+import { CUSTOM_SIZE, type CustomMeasurements, type Product } from "@/types";
 
 export function ProductPurchase({ product }: { product: Product }) {
   const mounted = useMounted();
@@ -24,6 +29,36 @@ export function ProductPurchase({ product }: { product: Product }) {
   const [size, setSize] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
   const [sizeError, setSizeError] = useState(false);
+  const [draft, setDraft] = useState<MeasurementDraft>({});
+  const [measureErrors, setMeasureErrors] = useState<
+    Partial<Record<keyof CustomMeasurements, string>>
+  >({});
+
+  const isCustom = size === CUSTOM_SIZE;
+
+  const setMeasurement = (key: keyof CustomMeasurements, value: string) => {
+    setDraft((d) => ({ ...d, [key]: value }));
+    setMeasureErrors((e) => ({ ...e, [key]: undefined }));
+  };
+
+  /** Validate every field; returns the parsed measurements or null. */
+  const readMeasurements = (): CustomMeasurements | null => {
+    const errors: Partial<Record<keyof CustomMeasurements, string>> = {};
+    const parsed = {} as CustomMeasurements;
+
+    for (const field of CUSTOM_FIELDS) {
+      const raw = (draft[field.key] ?? "").trim();
+      const n = Number(raw);
+      const { min, max } = MEASUREMENT_LIMITS[field.key];
+      if (!raw) errors[field.key] = "Required";
+      else if (!Number.isFinite(n)) errors[field.key] = "Numbers only";
+      else if (n < min || n > max) errors[field.key] = `${min}–${max} in`;
+      else parsed[field.key] = n;
+    }
+
+    setMeasureErrors(errors);
+    return Object.keys(errors).length ? null : parsed;
+  };
 
   const addBtnRef = useRef<HTMLDivElement>(null);
   const [showSticky, setShowSticky] = useState(false);
@@ -54,6 +89,16 @@ export function ProductPurchase({ product }: { product: Product }) {
         ?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
+    let custom: CustomMeasurements | undefined;
+    if (isCustom) {
+      const parsed = readMeasurements();
+      if (!parsed) {
+        toast.error("Please complete your measurements");
+        return;
+      }
+      custom = parsed;
+    }
+
     addItem({
       productId: product.id,
       slug: product.slug,
@@ -63,9 +108,12 @@ export function ProductPurchase({ product }: { product: Product }) {
       size: size as never,
       color,
       quantity: qty,
+      custom,
     });
     toast.success(`${product.name} added to your bag`, {
-      description: `${color} · Size ${size} · Qty ${qty}`,
+      description: isCustom
+        ? `${color} · Made to order · Qty ${qty}`
+        : `${color} · Size ${size} · Qty ${qty}`,
     });
   };
 
@@ -192,7 +240,32 @@ export function ProductPurchase({ product }: { product: Product }) {
                 {s}
               </button>
             ))}
+
+            <button
+              onClick={() => {
+                setSize(CUSTOM_SIZE);
+                setSizeError(false);
+              }}
+              aria-pressed={isCustom}
+              className={cn(
+                "grid h-11 place-items-center rounded-md border px-4 text-sm font-medium transition-colors",
+                isCustom
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-input text-foreground hover:border-brass",
+                sizeError && !size && "border-destructive/60"
+              )}
+            >
+              Custom
+            </button>
           </div>
+
+          {isCustom && (
+            <CustomSizeFields
+              draft={draft}
+              onChange={setMeasurement}
+              errors={measureErrors}
+            />
+          )}
         </div>
 
         {/* Quantity + actions */}

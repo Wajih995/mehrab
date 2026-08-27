@@ -25,13 +25,28 @@ interface CartState {
   setOpen: (open: boolean) => void;
 }
 
+/** Stable signature for a made-to-order fit, so two different sets of
+ *  measurements never collapse into one cart line. */
+const customKey = (item: Pick<CartItem, "custom">) =>
+  item.custom
+    ? Object.entries(item.custom)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([k, v]) => `${k}:${v}`)
+        .join("|")
+    : "";
+
 /** Match an item by its full variant identity. */
 const sameLine = (
   a: CartItem,
   productId: string,
   size: string,
-  color: string
-) => a.productId === productId && a.size === size && a.color === color;
+  color: string,
+  custom?: CartItem["custom"]
+) =>
+  a.productId === productId &&
+  a.size === size &&
+  a.color === color &&
+  customKey(a) === customKey({ custom });
 
 export const useCart = create<CartState>()(
   persist(
@@ -43,13 +58,13 @@ export const useCart = create<CartState>()(
       addItem: (item) =>
         set((state) => {
           const existing = state.items.find((i) =>
-            sameLine(i, item.productId, item.size, item.color)
+            sameLine(i, item.productId, item.size, item.color, item.custom)
           );
           if (existing) {
             return {
               isOpen: true,
               items: state.items.map((i) =>
-                sameLine(i, item.productId, item.size, item.color)
+                sameLine(i, item.productId, item.size, item.color, item.custom)
                   ? { ...i, quantity: i.quantity + item.quantity }
                   : i
               ),

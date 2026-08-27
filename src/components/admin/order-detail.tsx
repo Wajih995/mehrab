@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
+import { WhatsAppButton } from "@/components/admin/whatsapp-button";
 import { updateOrderStatus } from "@/actions/orders";
 import {
   ORDER_STATUSES,
@@ -24,6 +25,16 @@ import {
   type OrderStatus,
 } from "@/lib/orders-shared";
 import { formatPrice, formatDate } from "@/lib/utils";
+import {
+  CHART_SIZES,
+  CUSTOM_FIELDS,
+  type ChartSize,
+} from "@/lib/data/size-chart";
+
+/** True when a size has a row in the published size chart. */
+function chartMeasurements(size: string): boolean {
+  return (CHART_SIZES as readonly string[]).includes(size);
+}
 
 export function OrderDetail({ order }: { order: OrderRecord }) {
   const router = useRouter();
@@ -60,6 +71,7 @@ export function OrderDetail({ order }: { order: OrderRecord }) {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <WhatsAppButton order={order} />
           <Button asChild variant="outline">
             <Link href={`/admin/orders/${order.orderNumber}/receipt`}>
               <Printer className="size-4" /> Generate bill
@@ -98,10 +110,58 @@ export function OrderDetail({ order }: { order: OrderRecord }) {
                 </div>
                 <div className="flex flex-1 flex-col">
                   <p className="text-sm font-medium">{item.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {item.color} · Size {item.size} · Qty {item.quantity}
+                  <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+                    <span className="rounded bg-secondary px-1.5 py-0.5 font-medium text-foreground">
+                      Size {item.size}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {item.color} · Qty {item.quantity}
+                    </span>
                   </p>
-                  <span className="mt-auto text-sm font-medium tabular-nums">
+
+                  {/* Standard size → the chart numbers, so the atelier has
+                      the same detail a made-to-order line carries. */}
+                  {!item.custom && chartMeasurements(item.size) && (
+                    <div className="mt-2 rounded-md border border-border bg-secondary/40 p-3">
+                      <p className="text-2xs font-medium uppercase tracking-wide2 text-muted-foreground">
+                        Standard size {item.size} — chart measurements
+                      </p>
+                      <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs sm:grid-cols-3">
+                        {CUSTOM_FIELDS.map((f) => (
+                          <div key={f.key} className="flex justify-between gap-2">
+                            <dt className="text-muted-foreground">
+                              {f.fullLabel}
+                            </dt>
+                            <dd className="font-medium tabular-nums">
+                              {f.values[item.size as ChartSize]}&Prime;
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  )}
+
+                  {item.custom && (
+                    <div className="mt-2 rounded-md border border-brass/40 bg-brass/5 p-3">
+                      <p className="text-2xs font-medium uppercase tracking-wide2 text-brass">
+                        Made to order — cut to these measurements
+                      </p>
+                      <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs sm:grid-cols-3">
+                        {CUSTOM_FIELDS.map((f) => (
+                          <div key={f.key} className="flex justify-between gap-2">
+                            <dt className="text-muted-foreground">
+                              {f.fullLabel}
+                            </dt>
+                            <dd className="font-medium tabular-nums">
+                              {item.custom![f.key]}&Prime;
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  )}
+
+                  <span className="mt-auto pt-2 text-sm font-medium tabular-nums">
                     {formatPrice(item.price * item.quantity)}
                   </span>
                 </div>

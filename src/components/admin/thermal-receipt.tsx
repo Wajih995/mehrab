@@ -5,6 +5,7 @@ import { ArrowLeft, Printer } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/site";
+import { CUSTOM_FIELDS } from "@/lib/data/size-chart";
 import type { OrderRecord } from "@/lib/orders-shared";
 
 /** "Rs 12,500" without relying on locale availability in the print context. */
@@ -107,6 +108,16 @@ export function ThermalReceipt({ order }: { order: OrderRecord }) {
                   <span className="block text-[8px]">
                     {item.color} / {item.size} @ {rs(item.price)}
                   </span>
+                  {item.custom && (
+                    <span className="mt-0.5 block border-l-2 border-black pl-1 text-[8px] font-bold">
+                      MADE TO ORDER
+                      <span className="block font-normal">
+                        {CUSTOM_FIELDS.map(
+                          (f) => `${f.fullLabel} ${item.custom![f.key]}"`
+                        ).join(" · ")}
+                      </span>
+                    </span>
+                  )}
                 </td>
                 <td className="py-0.5 text-center tabular-nums">
                   {item.quantity}

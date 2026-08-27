@@ -1,77 +1,145 @@
 import type { Metadata } from "next";
 
-import { InfoPage, InfoSection } from "@/components/shared/info-page";
+import { Breadcrumbs } from "@/components/shared/breadcrumbs";
+import { Logo } from "@/components/layout/logo";
+import { SizeDiagram } from "@/components/shared/size-diagram";
+import {
+  CHART_SIZES,
+  KAMEEZ_ROWS,
+  SHALWAR_ROWS,
+  type MeasurementRow,
+} from "@/lib/data/size-chart";
 
 export const metadata: Metadata = {
   title: "Size Guide",
   description:
-    "MEHRAB size guide — kameez and shalwar measurements in inches, from XS to 3XL.",
+    "MEHRAB men's regular fit size guide — kameez and shalwar measurements in inches, XS to XXL, plus made-to-order sizing.",
   alternates: { canonical: "/size-guide" },
 };
 
-const SIZES = [
-  { size: "XS", chest: 38, shoulder: 17.0, sleeve: 23.5, length: 38 },
-  { size: "S", chest: 40, shoulder: 17.5, sleeve: 24.0, length: 39 },
-  { size: "M", chest: 42, shoulder: 18.0, sleeve: 24.5, length: 40 },
-  { size: "L", chest: 44, shoulder: 18.5, sleeve: 25.0, length: 41 },
-  { size: "XL", chest: 46, shoulder: 19.0, sleeve: 25.5, length: 42 },
-  { size: "XXL", chest: 48, shoulder: 19.5, sleeve: 26.0, length: 43 },
-  { size: "3XL", chest: 50, shoulder: 20.0, sleeve: 26.5, length: 44 },
-] as const;
-
 export default function SizeGuidePage() {
   return (
-    <InfoPage
-      eyebrow="Help"
-      title="Size Guide"
-      intro="All measurements are of the garment, in inches, taken flat. Between sizes? Size up for a relaxed drape."
-    >
+    <div className="container py-10 md:py-14">
+      <Breadcrumbs
+        items={[{ label: "Home", href: "/" }, { label: "Size Guide" }]}
+        className="mb-6"
+      />
+
+      <p className="text-2xs uppercase tracking-luxe text-muted-foreground">
+        Men Regular Fit / Kameez Shalwar
+      </p>
+
+      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_320px] lg:gap-14">
+        {/* Left: brand mark + tables */}
+        <div>
+          <Logo size="md" href={null} className="mb-10" />
+
+          <MeasurementTable title="Kameez" rows={KAMEEZ_ROWS} />
+          <MeasurementTable title="Shalwar" rows={SHALWAR_ROWS} className="mt-10" />
+
+          <p className="mt-6 text-sm text-muted-foreground">
+            All given measurements are in inches.
+          </p>
+
+          {/* How to measure */}
+          <div className="mt-12">
+            <h2 className="font-serif text-xl md:text-2xl">How to measure</h2>
+            <dl className="mt-4 space-y-3 text-sm">
+              {[...KAMEEZ_ROWS, ...SHALWAR_ROWS].map((row) => (
+                <div key={row.key} className="flex gap-3">
+                  <dt className="w-28 shrink-0 font-medium">
+                    <span className="mr-1.5 text-brass">{row.ref}</span>
+                    {row.label}
+                  </dt>
+                  <dd className="text-muted-foreground">{row.how}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
+              These are <strong className="text-foreground">garment</strong>{" "}
+              measurements taken flat, not body measurements — chest is armpit
+              to armpit, so it reads as roughly half your body chest. Between
+              two sizes? Size up for a relaxed drape.
+            </p>
+          </div>
+
+          {/* Made to order */}
+          <div className="mt-10 rounded-lg border border-brass/40 bg-secondary/30 p-6">
+            <h2 className="font-serif text-xl">Made to order</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              None of these quite right? Choose{" "}
+              <strong className="text-foreground">Custom</strong> on any product
+              page and enter your own six measurements — our Lahore atelier cuts
+              the piece to your numbers at no extra charge. Made-to-order pieces
+              add 3–4 working days and are exchange-only.
+            </p>
+          </div>
+        </div>
+
+        {/* Right: diagram */}
+        <aside className="lg:sticky lg:top-28 lg:self-start">
+          <div className="rounded-xl border border-border bg-card p-6">
+            <SizeDiagram className="mx-auto h-auto w-full max-w-[260px] text-foreground" />
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              Letters match the rows in the tables.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
+}
+
+function MeasurementTable({
+  title,
+  rows,
+  className,
+}: {
+  title: string;
+  rows: MeasurementRow[];
+  className?: string;
+}) {
+  return (
+    <section className={className}>
+      <h2 className="mb-3 font-serif text-xl md:text-2xl">{title}</h2>
       <div className="overflow-x-auto rounded-lg border border-border">
         <table className="w-full min-w-[520px] text-sm">
           <thead>
-            <tr className="border-b border-border bg-secondary/40 text-left text-xs uppercase tracking-wide2 text-muted-foreground">
-              <th className="px-5 py-3 font-medium">Size</th>
-              <th className="px-5 py-3 font-medium">Chest</th>
-              <th className="px-5 py-3 font-medium">Shoulder</th>
-              <th className="px-5 py-3 font-medium">Sleeve</th>
-              <th className="px-5 py-3 font-medium">Kameez length</th>
+            <tr className="border-b border-border bg-secondary/40 text-xs uppercase tracking-wide2 text-muted-foreground">
+              <th className="w-10 px-3 py-3 text-left font-medium" />
+              <th className="px-3 py-3 text-left font-medium">Size</th>
+              {CHART_SIZES.map((s) => (
+                <th key={s} className="px-3 py-3 text-center font-medium">
+                  {s}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {SIZES.map((s) => (
-              <tr key={s.size} className="border-b border-border/60 last:border-0">
-                <td className="px-5 py-3 font-medium">{s.size}</td>
-                <td className="px-5 py-3">{s.chest}&Prime;</td>
-                <td className="px-5 py-3">{s.shoulder}&Prime;</td>
-                <td className="px-5 py-3">{s.sleeve}&Prime;</td>
-                <td className="px-5 py-3">{s.length}&Prime;</td>
+            {rows.map((row) => (
+              <tr
+                key={row.key}
+                className="border-b border-border/60 last:border-0"
+              >
+                <td className="px-3 py-3 text-center font-medium text-brass">
+                  {row.ref}
+                </td>
+                <td className="whitespace-nowrap px-3 py-3 uppercase text-muted-foreground">
+                  {row.label}
+                </td>
+                {CHART_SIZES.map((s) => (
+                  <td
+                    key={s}
+                    className="px-3 py-3 text-center tabular-nums"
+                  >
+                    {row.values[s]}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      <InfoSection title="How to measure">
-        <ul className="list-disc space-y-1.5 pl-5">
-          <li>
-            <strong>Chest</strong> — measure a kameez that fits you well, armpit
-            to armpit, then double it.
-          </li>
-          <li>
-            <strong>Shoulder</strong> — seam to seam across the back.
-          </li>
-          <li>
-            <strong>Sleeve</strong> — shoulder seam to cuff.
-          </li>
-          <li>
-            <strong>Length</strong> — collar base to hem.
-          </li>
-        </ul>
-        <p>
-          Still unsure? Send us your measurements on WhatsApp and we will
-          recommend a size — or tailor one to order.
-        </p>
-      </InfoSection>
-    </InfoPage>
+    </section>
   );
 }

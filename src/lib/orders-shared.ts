@@ -1,3 +1,4 @@
+import type { CustomMeasurements } from "@/types";
 import type { OrderTotals } from "@/lib/checkout";
 
 /**
@@ -26,6 +27,8 @@ export interface OrderLine {
   size: string;
   color: string;
   quantity: number;
+  /** Made-to-order measurements when size is "Custom". */
+  custom?: CustomMeasurements;
 }
 
 /** A placed order as the admin panel and receipt see it. */

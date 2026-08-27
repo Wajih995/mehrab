@@ -37,6 +37,16 @@ export const checkoutSchema = z.object({
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 
 /** Cart line as sent to the server for order placement. */
+/** Made-to-order measurements, bounded to reject typos. */
+export const customMeasurementsSchema = z.object({
+  collar: z.number().min(12).max(24),
+  shoulder: z.number().min(14).max(28),
+  chest: z.number().min(18).max(40),
+  sleeveLength: z.number().min(18).max(32),
+  length: z.number().min(32).max(56),
+  shalwarLength: z.number().min(32).max(56),
+});
+
 export const orderItemSchema = z.object({
   productId: z.string(),
   slug: z.string(),
@@ -46,6 +56,7 @@ export const orderItemSchema = z.object({
   size: z.string(),
   color: z.string(),
   quantity: z.number().int().positive(),
+  custom: customMeasurementsSchema.optional(),
 });
 
 export const placeOrderSchema = z.object({

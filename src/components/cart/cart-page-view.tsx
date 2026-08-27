@@ -9,6 +9,7 @@ import { OrderSummary } from "@/components/cart/order-summary";
 import { useCart } from "@/hooks/use-cart";
 import { useMounted } from "@/hooks/use-mounted";
 import { formatPrice } from "@/lib/utils";
+import { formatMeasurements } from "@/lib/data/size-chart";
 
 export function CartPageView() {
   const mounted = useMounted();
@@ -72,6 +73,11 @@ export function CartPageView() {
                     </Link>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {item.color} · Size {item.size}
+                      {item.custom && (
+                        <span className="mt-1 block text-xs text-brass">
+                          Made to order — {formatMeasurements(item.custom)}
+                        </span>
+                      )}
                     </p>
                   </div>
                   <button

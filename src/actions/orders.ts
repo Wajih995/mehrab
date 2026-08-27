@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import type { OrderStatus as DbOrderStatus } from "@prisma/client";
+import { Prisma, type OrderStatus as DbOrderStatus } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
 import { isDbConfigured } from "@/lib/env";
@@ -112,6 +112,9 @@ export async function placeOrder(
             size: i.size,
             color: i.color,
             quantity: i.quantity,
+            custom: i.custom
+              ? (i.custom as unknown as Prisma.InputJsonValue)
+              : Prisma.JsonNull,
           })),
         },
       },
