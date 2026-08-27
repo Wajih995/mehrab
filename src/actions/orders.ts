@@ -9,7 +9,8 @@ import { isDbConfigured } from "@/lib/env";
 import { computeTotals, validateCoupon, type OrderTotals } from "@/lib/checkout";
 import { placeOrderSchema, type PlaceOrderInput } from "@/lib/validations/checkout";
 import { addOrder, setOrderStatus } from "@/lib/server-orders";
-import { ORDER_STATUSES, type OrderStatus } from "@/lib/orders-shared";
+import { ORDER_STATUSES, type OrderRecord, type OrderStatus } from "@/lib/orders-shared";
+import { sendOrderConfirmationEmail } from "@/lib/notifications/order-confirmation";
 
 export interface PlaceOrderResult {
   ok: boolean;
@@ -62,6 +63,24 @@ export async function placeOrder(
   const orderNumber = generateOrderNumber();
   const placedAt = new Date().toISOString();
 
+  const record: OrderRecord = {
+    orderNumber,
+    placedAt,
+    status: "Confirmed",
+    paymentMethod: "cod",
+    email: customer.email,
+    fullName: `${customer.firstName} ${customer.lastName}`,
+    phone: customer.phone,
+    address: customer.address,
+    city: customer.city,
+    province: customer.province,
+    postalCode: customer.postalCode || undefined,
+    notes: customer.notes || undefined,
+    couponCode: coupon?.code,
+    items: items.map((i) => ({ ...i, productId: i.productId ?? null })),
+    totals,
+  };
+
   if (isDbConfigured) {
     // Persist the order + line items. Products link where a match exists.
     await prisma.order.create({
@@ -97,28 +116,16 @@ export async function placeOrder(
         },
       },
     });
-    // TODO(inventory): decrement stock; TODO(email): send confirmation.
+    // TODO(inventory): decrement stock.
   } else {
     // Demo mode — persist to the server-side file store so the order
     // reaches the admin panel (a different browser than the customer's).
-    addOrder({
-      orderNumber,
-      placedAt,
-      status: "Confirmed",
-      paymentMethod: "cod",
-      email: customer.email,
-      fullName: `${customer.firstName} ${customer.lastName}`,
-      phone: customer.phone,
-      address: customer.address,
-      city: customer.city,
-      province: customer.province,
-      postalCode: customer.postalCode || undefined,
-      notes: customer.notes || undefined,
-      couponCode: coupon?.code,
-      items: items.map((i) => ({ ...i, productId: i.productId ?? null })),
-      totals,
-    });
+    addOrder(record);
   }
+
+  // Notify AFTER the order is safely persisted; never fails the order.
+  await sendOrderConfirmationEmail(record);
+  // TODO(sms): send the COD confirmation SMS here once a gateway is set up.
 
   revalidateOrders();
   return { ok: true, orderNumber, totals, placedAt };

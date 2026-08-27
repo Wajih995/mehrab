@@ -20,7 +20,14 @@ import { siteConfig } from "@/lib/site";
 import { absoluteUrl } from "@/lib/utils";
 
 export async function generateStaticParams() {
-  return (await getProducts()).map((p) => ({ slug: p.slug }));
+  // A build must not depend on the database being reachable: if the query
+  // fails, prerender nothing and let these pages render on demand instead.
+  try {
+    return (await getProducts()).map((p) => ({ slug: p.slug }));
+  } catch (err) {
+    console.error("generateStaticParams: catalogue unavailable at build", err);
+    return [];
+  }
 }
 
 export async function generateMetadata({
