@@ -59,6 +59,10 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 
   const [name, setName] = useState(product?.name ?? "");
   const [slug, setSlug] = useState(product?.slug ?? "");
+  // Entered by hand — deliberately never derived from the name.
+  const [articleNumber, setArticleNumber] = useState(
+    product?.articleNumber ?? ""
+  );
   const [subtitle, setSubtitle] = useState(product?.subtitle ?? "");
   const [description, setDescription] = useState(product?.description ?? "");
   const [price, setPrice] = useState(product ? String(product.price) : "");
@@ -131,6 +135,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     const payload: Product = {
       id: product?.id ?? `p-${slugify(name)}-${Date.now().toString(36)}`,
       slug: slug || slugify(name),
+      articleNumber: articleNumber.trim() || undefined,
       name: name.trim(),
       subtitle: subtitle.trim() || undefined,
       description: description.trim(),
@@ -198,6 +203,17 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         <div className="space-y-6">
           <Card title="Details">
             <div className="grid gap-4 sm:grid-cols-2">
+              <FieldRow label="Article number" className="sm:col-span-2">
+                <Input
+                  value={articleNumber}
+                  onChange={(e) => setArticleNumber(e.target.value.toUpperCase())}
+                  placeholder="MEH-KMZ-1024"
+                />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Your own style code — typed manually, never generated. Shown
+                  on the product page and searchable by customers.
+                </p>
+              </FieldRow>
               <FieldRow label="Product name" className="sm:col-span-2">
                 <Input value={name} onChange={(e) => onNameChange(e.target.value)} placeholder="Noor Signature Kameez" />
               </FieldRow>

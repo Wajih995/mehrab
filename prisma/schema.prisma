@@ -89,6 +89,8 @@ model Collection {
 model Product {
   id             String   @id @default(cuid())
   slug           String   @unique
+  /// Manual style/article code entered by staff — never auto-generated.
+  articleNumber  String?  @unique
   name           String
   subtitle       String?
   description    String   @db.Text

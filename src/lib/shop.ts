@@ -117,6 +117,7 @@ export function filterProducts(products: Product[], f: ParsedFilters) {
     items = items.filter(
       (p) =>
         p.name.toLowerCase().includes(q) ||
+        p.articleNumber?.toLowerCase().includes(q) ||
         p.subtitle?.toLowerCase().includes(q) ||
         p.fabric.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q)

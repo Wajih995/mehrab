@@ -23,7 +23,8 @@ export function ProductsTable({ products }: { products: Product[] }) {
     (p) =>
       !q ||
       p.name.toLowerCase().includes(q.toLowerCase()) ||
-      p.fabric.toLowerCase().includes(q.toLowerCase())
+      p.fabric.toLowerCase().includes(q.toLowerCase()) ||
+      p.articleNumber?.toLowerCase().includes(q.toLowerCase())
   );
 
   const handleDelete = (id: string, name: string) => {
@@ -47,7 +48,7 @@ export function ProductsTable({ products }: { products: Product[] }) {
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search products"
+            placeholder="Search name, article or fabric"
             className="pl-9"
           />
         </div>
@@ -64,6 +65,7 @@ export function ProductsTable({ products }: { products: Product[] }) {
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide2 text-muted-foreground">
                 <th className="px-5 py-3 font-medium">Product</th>
+                <th className="px-5 py-3 font-medium">Article</th>
                 <th className="px-5 py-3 font-medium">Fabric</th>
                 <th className="px-5 py-3 font-medium">Price</th>
                 <th className="px-5 py-3 font-medium">Status</th>
@@ -97,6 +99,15 @@ export function ProductsTable({ products }: { products: Product[] }) {
                         </p>
                       </div>
                     </div>
+                  </td>
+                  <td className="whitespace-nowrap px-5 py-3">
+                    {p.articleNumber ? (
+                      <span className="rounded bg-secondary px-1.5 py-0.5 text-xs font-medium">
+                        {p.articleNumber}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </td>
                   <td className="px-5 py-3 text-muted-foreground">{p.fabric}</td>
                   <td className="px-5 py-3">

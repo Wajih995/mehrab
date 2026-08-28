@@ -39,6 +39,7 @@ function mapProduct(p: DbProduct): Product {
   return {
     id: p.id,
     slug: p.slug,
+    articleNumber: p.articleNumber ?? undefined,
     name: p.name,
     subtitle: p.subtitle ?? undefined,
     description: p.description,

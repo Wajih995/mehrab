@@ -57,6 +57,8 @@ export type Season = "All Season" | "Summer" | "Winter" | "Festive";
 export interface Product {
   id: string;
   slug: string;
+  /** Manual article / style code (e.g. "MEH-KMZ-1024"), shown on the site. */
+  articleNumber?: string;
   name: string;
   subtitle?: string;
   description: string;

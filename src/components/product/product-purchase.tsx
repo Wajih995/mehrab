@@ -147,6 +147,14 @@ export function ProductPurchase({ product }: { product: Product }) {
           <p className="mt-1.5 text-sm text-muted-foreground">
             {product.subtitle}
           </p>
+          {product.articleNumber && (
+            <p className="mt-1.5 text-xs uppercase tracking-wide2 text-muted-foreground">
+              Article&nbsp;
+              <span className="font-medium text-foreground">
+                {product.articleNumber}
+              </span>
+            </p>
+          )}
           <div className="mt-3">
             <StarRating
               rating={product.rating}

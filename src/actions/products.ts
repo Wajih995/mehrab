@@ -30,6 +30,7 @@ function revalidateStore() {
 function scalarData(product: Product) {
   return {
     slug: product.slug,
+    articleNumber: product.articleNumber?.trim() || null,
     name: product.name,
     subtitle: product.subtitle ?? null,
     description: product.description,
