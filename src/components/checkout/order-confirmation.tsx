@@ -1,81 +1,113 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { Check, Package, Truck } from "lucide-react";
+import {
+  Check,
+  CircleX,
+  Package,
+  PackageCheck,
+  Truck,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useOrders } from "@/hooks/use-orders";
-import { useMounted } from "@/hooks/use-mounted";
 import { formatPrice, formatDate } from "@/lib/utils";
+import type { OrderRecord, OrderStatus } from "@/lib/orders-shared";
 
-export function OrderConfirmation({ orderNumber }: { orderNumber: string }) {
-  const mounted = useMounted();
-  const order = useOrders((s) => s.orders.find((o) => o.orderNumber === orderNumber));
+/** Timeline steps in fulfilment order (Cancelled is rendered separately). */
+const STEPS: { status: OrderStatus; label: string; icon: typeof Check }[] = [
+  { status: "Confirmed", label: "Confirmed", icon: Check },
+  { status: "Packed", label: "Packed", icon: Package },
+  { status: "Shipped", label: "On the way", icon: Truck },
+  { status: "Delivered", label: "Delivered", icon: PackageCheck },
+];
 
-  if (!mounted) return <div className="min-h-[50vh]" />;
+const HEADLINE: Record<OrderStatus, (name: string) => string> = {
+  Confirmed: (n) => `Thank you, ${n}`,
+  Packed: (n) => `Almost ready, ${n}`,
+  Shipped: (n) => `It's on the way, ${n}`,
+  Delivered: (n) => `Delivered — enjoy, ${n}`,
+  Cancelled: (n) => `Order cancelled, ${n}`,
+};
 
-  if (!order) {
-    return (
-      <div className="flex flex-col items-center py-24 text-center">
-        <h1 className="font-serif text-3xl">Order not found</h1>
-        <p className="mt-3 max-w-md text-muted-foreground">
-          We couldn&apos;t find order{" "}
-          <span className="font-medium text-foreground">{orderNumber}</span> on
-          this device. If you just placed it, check your email for confirmation.
-        </p>
-        <Button asChild size="lg" className="mt-6">
-          <Link href="/shop">Continue shopping</Link>
-        </Button>
-      </div>
-    );
-  }
+const STATUS_LINE: Record<OrderStatus, string> = {
+  Confirmed: "is confirmed and our atelier is preparing it.",
+  Packed: "is packed and ready to leave our atelier.",
+  Shipped: "is with the courier — please keep the amount ready.",
+  Delivered: "has been delivered. Free size exchange within 7 days.",
+  Cancelled: "has been cancelled. Nothing is payable.",
+};
+
+/**
+ * Live order status + summary. Rendered on the server from the same order
+ * store the admin panel writes to, so a status change in admin is visible
+ * to the customer on their next visit or refresh.
+ */
+export function OrderConfirmation({ order }: { order: OrderRecord }) {
+  const firstName = order.fullName.split(" ")[0];
+  const cancelled = order.status === "Cancelled";
+  const reached = STEPS.findIndex((s) => s.status === order.status);
 
   return (
     <div className="mx-auto max-w-2xl">
       {/* Hero */}
       <div className="flex flex-col items-center text-center">
-        <div className="grid size-16 place-items-center rounded-full bg-brass/15 text-brass">
-          <Check className="size-8" strokeWidth={2.5} />
+        <div
+          className={
+            cancelled
+              ? "grid size-16 place-items-center rounded-full bg-destructive/10 text-destructive"
+              : "grid size-16 place-items-center rounded-full bg-brass/15 text-brass"
+          }
+        >
+          {cancelled ? (
+            <CircleX className="size-8" strokeWidth={2.5} />
+          ) : (
+            <Check className="size-8" strokeWidth={2.5} />
+          )}
         </div>
-        <p className="eyebrow mt-6">Order confirmed</p>
+        <p className="eyebrow mt-6">Order {order.status.toLowerCase()}</p>
         <h1 className="mt-2 font-serif text-3xl leading-tight md:text-4xl">
-          Thank you, {order.fullName.split(" ")[0]}
+          {HEADLINE[order.status](firstName)}
         </h1>
         <p className="mt-3 text-muted-foreground">
           Your order{" "}
-          <span className="font-medium text-foreground">{order.orderNumber}</span>{" "}
-          is confirmed. A receipt is on its way to {order.email}.
+          <span className="font-medium text-foreground">
+            {order.orderNumber}
+          </span>{" "}
+          {STATUS_LINE[order.status]}
         </p>
       </div>
 
-      {/* Timeline */}
-      <div className="mt-10 grid grid-cols-3 gap-2 text-center">
-        {[
-          { icon: Check, label: "Confirmed", active: true },
-          { icon: Package, label: "Packed", active: false },
-          { icon: Truck, label: "On the way", active: false },
-        ].map((step, i) => {
-          const Icon = step.icon;
-          return (
-            <div key={i} className="flex flex-col items-center gap-2">
-              <div
-                className={
-                  step.active
-                    ? "grid size-10 place-items-center rounded-full bg-brass text-brass-foreground"
-                    : "grid size-10 place-items-center rounded-full border border-border text-muted-foreground"
-                }
-              >
-                <Icon className="size-4" />
+      {/* Timeline — driven by the live status */}
+      {!cancelled && (
+        <div className="mt-10 grid grid-cols-4 gap-2 text-center">
+          {STEPS.map((step, i) => {
+            const Icon = step.icon;
+            const active = i <= reached;
+            return (
+              <div key={step.status} className="flex flex-col items-center gap-2">
+                <div
+                  className={
+                    active
+                      ? "grid size-10 place-items-center rounded-full bg-brass text-brass-foreground"
+                      : "grid size-10 place-items-center rounded-full border border-border text-muted-foreground"
+                  }
+                >
+                  <Icon className="size-4" />
+                </div>
+                <span
+                  className={
+                    active
+                      ? "text-2xs font-medium uppercase tracking-wide2 text-foreground"
+                      : "text-2xs uppercase tracking-wide2 text-muted-foreground"
+                  }
+                >
+                  {step.label}
+                </span>
               </div>
-              <span className="text-2xs uppercase tracking-wide2 text-muted-foreground">
-                {step.label}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Order details */}
       <div className="mt-10 rounded-xl border border-border bg-card p-6">
@@ -89,7 +121,7 @@ export function OrderConfirmation({ orderNumber }: { orderNumber: string }) {
         <ul className="mt-5 divide-y divide-border">
           {order.items.map((item) => (
             <li
-              key={`${item.productId}-${item.size}-${item.color}`}
+              key={`${item.slug}-${item.size}-${item.color}`}
               className="flex gap-4 py-4"
             >
               <div className="relative aspect-[3/4] w-16 shrink-0 overflow-hidden rounded-md bg-muted">
@@ -104,7 +136,9 @@ export function OrderConfirmation({ orderNumber }: { orderNumber: string }) {
               <div className="flex flex-1 flex-col">
                 <p className="text-sm font-medium">{item.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {item.color} · Size {item.size} · Qty {item.quantity}
+                  {item.color} · Size {item.size}
+                  {item.bottomStyle && ` · ${item.bottomStyle}`} · Qty{" "}
+                  {item.quantity}
                 </p>
                 <span className="mt-auto text-sm font-medium tabular-nums">
                   {formatPrice(item.price * item.quantity)}
@@ -121,8 +155,10 @@ export function OrderConfirmation({ orderNumber }: { orderNumber: string }) {
           {order.totals.discount > 0 && (
             <Row label="Discount">−{formatPrice(order.totals.discount)}</Row>
           )}
-          <Row label="Shipping">
-            {order.totals.freeShipping ? "Free" : formatPrice(order.totals.shipping)}
+          <Row label="Delivery">
+            {order.totals.freeShipping
+              ? "Free"
+              : formatPrice(order.totals.shipping)}
           </Row>
         </div>
         <Separator className="my-4" />
@@ -160,19 +196,25 @@ export function OrderConfirmation({ orderNumber }: { orderNumber: string }) {
         </div>
       </div>
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+      <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <Button asChild size="lg">
           <Link href="/shop">Continue shopping</Link>
         </Button>
-        <Button asChild size="lg" variant="outline">
-          <Link href="/account/orders">View my orders</Link>
+        <Button asChild variant="outline" size="lg">
+          <Link href="/contact">Need help?</Link>
         </Button>
       </div>
     </div>
   );
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+function Row({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex items-center justify-between">
       <span className="text-muted-foreground">{label}</span>

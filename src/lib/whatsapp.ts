@@ -67,6 +67,7 @@ function eta(city: string): string {
  */
 export function whatsAppOrderMessage(order: OrderRecord): string {
   const firstName = order.fullName.split(" ")[0];
+  const track = `Track anytime: ${siteConfig.url}/track/${order.orderNumber}`;
   const greeting = `Assalam-o-Alaikum ${firstName}!`;
   const sign = `Shukriya for choosing MEHRAB.`;
   const cod = `${rs(order.totals.total)} (Cash on Delivery)`;
@@ -84,6 +85,8 @@ ${itemLines(order)}
 
 Please keep the amount ready for the rider. If you'd like to change the size or address, just reply here.
 
+${track}
+
 ${sign}`,
 
     Packed: `${greeting}
@@ -93,7 +96,7 @@ Good news — order *${order.orderNumber}* is packed and ready to leave our Laho
 *Total:* ${cod}
 *Delivery:* ${eta(order.city)} to ${order.city}
 
-We'll share tracking as soon as it's dispatched.
+${track}
 
 ${sign}`,
 
@@ -105,6 +108,8 @@ Your MEHRAB order *${order.orderNumber}* is on its way.
 *Expected:* ${eta(order.city)}
 
 The courier will call before arriving — please keep the amount ready. Reply here if you need to reschedule.
+
+${track}
 
 ${sign}`,
 

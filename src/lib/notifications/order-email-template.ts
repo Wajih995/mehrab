@@ -88,6 +88,18 @@ export function orderConfirmationHtml(order: OrderRecord): string {
             </div>
           </td>
         </tr>
+        <!-- Track order -->
+        <tr>
+          <td align="center" style="padding:0 32px 28px;">
+            <a href="${siteConfig.url}/track/${order.orderNumber}"
+               style="display:inline-block;background:#26221f;color:#f7f3ea;text-decoration:none;font-size:13px;letter-spacing:2px;padding:14px 36px;">
+              TRACK YOUR ORDER
+            </a>
+            <div style="margin-top:10px;font-size:11px;color:#8a8378;">
+              ${siteConfig.url.replace("https://", "").replace("http://", "")}/track/${order.orderNumber}
+            </div>
+          </td>
+        </tr>
         <!-- Footer -->
         <tr>
           <td align="center" style="border-top:1px solid #e8e2d4;padding:20px 32px 28px;color:#8a8378;font-size:12px;line-height:1.7;">

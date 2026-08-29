@@ -8,7 +8,11 @@ export const siteConfig = {
   tagline: "Elevate Tradition",
   description:
     "MEHRAB crafts premium men's Shalwar Kameez — heritage tailoring, considered fabrics, and a modern, minimal silhouette. Handmade in Pakistan.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  url:
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.NODE_ENV === "production"
+      ? "https://mehrabessentials.com"
+      : "http://localhost:3000"),
   locale: "en_PK",
   currency: "PKR",
   contact: {
