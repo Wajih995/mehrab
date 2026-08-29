@@ -31,6 +31,9 @@ export const checkoutSchema = z.object({
     .or(z.literal("")),
   notes: z.string().max(500).optional(),
   paymentMethod: z.enum(["cod"]), // COD only — no online payment
+  acceptTerms: z
+    .boolean()
+    .refine((v) => v === true, "Please accept the Terms & Conditions"),
   couponCode: z.string().optional(),
 });
 

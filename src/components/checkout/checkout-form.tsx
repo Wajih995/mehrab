@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { OrderSummary } from "@/components/cart/order-summary";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useCart, selectSubtotal } from "@/hooks/use-cart";
 import { useOrders } from "@/hooks/use-orders";
 import { useMounted } from "@/hooks/use-mounted";
@@ -57,7 +58,7 @@ export function CheckoutForm({
     formState: { errors, isSubmitting },
   } = useForm<CheckoutInput>({
     resolver: zodResolver(checkoutSchema),
-    defaultValues: { paymentMethod: "cod", province: undefined },
+    defaultValues: { paymentMethod: "cod", acceptTerms: false, province: undefined },
   });
 
   const onSubmit = async (values: CheckoutInput) => {
@@ -215,6 +216,51 @@ export function CheckoutForm({
       {/* Right: summary + submit */}
       <div className="lg:sticky lg:top-28 lg:self-start">
         <OrderSummary delivery={delivery} city={city} />
+
+        {/* Terms acceptance — required before the order can be placed */}
+        <Controller
+          control={control}
+          name="acceptTerms"
+          render={({ field }) => (
+            <div className="mt-5">
+              <label className="flex cursor-pointer items-start gap-2.5 text-sm">
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={(v) => field.onChange(v === true)}
+                  aria-invalid={Boolean(errors.acceptTerms)}
+                  className="mt-0.5"
+                />
+                <span className="leading-relaxed text-muted-foreground">
+                  I have read and accept the{" "}
+                  <Link
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brass underline underline-offset-4 hover:text-foreground"
+                  >
+                    Terms &amp; Conditions
+                  </Link>{" "}
+                  and the{" "}
+                  <Link
+                    href="/returns"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brass underline underline-offset-4 hover:text-foreground"
+                  >
+                    Exchange Policy
+                  </Link>
+                  .
+                </span>
+              </label>
+              {errors.acceptTerms && (
+                <p className="mt-1.5 text-xs text-destructive">
+                  {errors.acceptTerms.message}
+                </p>
+              )}
+            </div>
+          )}
+        />
+
         <Button
           type="submit"
           size="lg"
