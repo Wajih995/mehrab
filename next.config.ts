@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
+    serverActions: {
+      // The admin product form sends images as base64 data URLs (2MB file
+      // cap each, ~2.7MB encoded). Next's 1MB default rejects the save with
+      // an opaque "Failed to fetch".
+      bodySizeLimit: "10mb",
+    },
   },
 };
 
