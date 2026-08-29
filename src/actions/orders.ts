@@ -7,6 +7,8 @@ import { Prisma, type OrderStatus as DbOrderStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { isDbConfigured } from "@/lib/env";
 import { computeTotals, validateCoupon, type OrderTotals } from "@/lib/checkout";
+import { deliveryFeeFor } from "@/lib/delivery";
+import { getDeliverySettings } from "@/lib/repositories/delivery";
 import { placeOrderSchema, type PlaceOrderInput } from "@/lib/validations/checkout";
 import { addOrder, setOrderStatus } from "@/lib/server-orders";
 import { ORDER_STATUSES, type OrderRecord, type OrderStatus } from "@/lib/orders-shared";
@@ -59,7 +61,16 @@ export async function placeOrder(
     ? validateCoupon(customer.couponCode, subtotal)
     : null;
   const coupon = couponResult?.ok ? couponResult.coupon : null;
-  const totals = computeTotals(subtotal, coupon);
+
+  // Delivery is priced server-side from the admin-managed city rates —
+  // never from anything the client sent.
+  const delivery = await getDeliverySettings();
+  const totals = computeTotals(
+    subtotal,
+    coupon,
+    deliveryFeeFor(customer.city, delivery),
+    delivery
+  );
   const orderNumber = generateOrderNumber();
   const placedAt = new Date().toISOString();
 

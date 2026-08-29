@@ -257,6 +257,14 @@ model Coupon {
   createdAt   DateTime @default(now())
 }
 
+// ─── Admin-editable site settings (delivery rates, …) ───────
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique // e.g. "delivery"
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
 // ─── Site navigation (admin-editable menus) ─────────────────
 model SiteMenu {
   id        String   @id @default(cuid())

@@ -10,8 +10,13 @@ import { useCart } from "@/hooks/use-cart";
 import { useMounted } from "@/hooks/use-mounted";
 import { formatPrice } from "@/lib/utils";
 import { formatMeasurements } from "@/lib/data/size-chart";
+import type { DeliverySettings } from "@/lib/delivery";
 
-export function CartPageView() {
+export function CartPageView({
+  delivery,
+}: {
+  delivery?: DeliverySettings;
+}) {
   const mounted = useMounted();
   const items = useCart((s) => s.items);
   const updateQuantity = useCart((s) => s.updateQuantity);
@@ -144,6 +149,7 @@ export function CartPageView() {
       {/* Summary */}
       <div className="lg:sticky lg:top-28 lg:self-start">
         <OrderSummary
+          delivery={delivery}
           footer={
             <Button asChild size="lg" className="w-full">
               <Link href="/checkout">Proceed to Checkout</Link>

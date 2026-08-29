@@ -1,8 +1,14 @@
 import type { Money } from "../types";
+import { DEFAULT_DELIVERY, type DeliverySettings } from "./delivery";
 
-/** Flat shipping fee; waived above the free-shipping threshold. */
-export const SHIPPING_FEE: Money = 250;
-export const FREE_SHIPPING_THRESHOLD: Money = 15000;
+/**
+ * Legacy flat rate — kept only as a fallback for callers that have no
+ * delivery settings to hand. Real pricing comes from the admin-managed
+ * rates in `@/lib/delivery`.
+ */
+export const SHIPPING_FEE: Money = DEFAULT_DELIVERY.defaultFee;
+export const FREE_SHIPPING_THRESHOLD: Money =
+  DEFAULT_DELIVERY.freeShippingThreshold;
 
 export type CouponType = "percent" | "fixed" | "shipping";
 
@@ -53,17 +59,30 @@ export interface OrderTotals {
   freeShipping: boolean;
 }
 
-/** Authoritative totals calculation — shared by cart, checkout, and server. */
-export function computeTotals(subtotal: Money, coupon?: Coupon | null): OrderTotals {
+/**
+ * Authoritative totals calculation — shared by cart, checkout, and server.
+ *
+ * `deliveryFee` is the city's rate (see `deliveryFeeFor`); omit it and the
+ * default rate applies. Free-shipping threshold and shipping coupons still
+ * override it.
+ */
+export function computeTotals(
+  subtotal: Money,
+  coupon?: Coupon | null,
+  deliveryFee?: Money,
+  settings: DeliverySettings = DEFAULT_DELIVERY
+): OrderTotals {
   let discount = 0;
   if (coupon) {
     if (coupon.type === "percent") discount = Math.round((subtotal * coupon.value) / 100);
     else if (coupon.type === "fixed") discount = Math.min(coupon.value, subtotal);
   }
 
+  const threshold = settings.freeShippingThreshold;
   const qualifiesFree =
-    subtotal >= FREE_SHIPPING_THRESHOLD || coupon?.type === "shipping";
-  const shipping = subtotal === 0 || qualifiesFree ? 0 : SHIPPING_FEE;
+    (threshold > 0 && subtotal >= threshold) || coupon?.type === "shipping";
+  const fee = deliveryFee ?? settings.defaultFee;
+  const shipping = subtotal === 0 || qualifiesFree ? 0 : fee;
 
   return {
     subtotal,

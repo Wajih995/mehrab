@@ -7,6 +7,12 @@ import { CouponForm } from "@/components/cart/coupon-form";
 import { useCart, selectSubtotal } from "@/hooks/use-cart";
 import { useMounted } from "@/hooks/use-mounted";
 import { computeTotals, validateCoupon } from "@/lib/checkout";
+import {
+  DEFAULT_DELIVERY,
+  deliveryFeeFor,
+  findZone,
+  type DeliverySettings,
+} from "@/lib/delivery";
 import { formatPrice } from "@/lib/utils";
 
 interface OrderSummaryProps {
@@ -15,6 +21,10 @@ interface OrderSummaryProps {
   /** CTA rendered under the totals (e.g. checkout button). */
   footer?: ReactNode;
   title?: string;
+  /** Live delivery rates from the admin panel. */
+  delivery?: DeliverySettings;
+  /** Destination city, once the customer has entered one. */
+  city?: string;
 }
 
 /** Order totals panel — shared by the cart page and checkout. */
@@ -22,6 +32,8 @@ export function OrderSummary({
   editableCoupon = true,
   footer,
   title = "Order Summary",
+  delivery = DEFAULT_DELIVERY,
+  city,
 }: OrderSummaryProps) {
   const mounted = useMounted();
   const items = useCart((s) => s.items);
@@ -32,7 +44,13 @@ export function OrderSummary({
     couponCode && validateCoupon(couponCode, subtotal).ok
       ? validateCoupon(couponCode, subtotal).coupon
       : null;
-  const totals = computeTotals(subtotal, coupon);
+  const zone = findZone(city, delivery);
+  const totals = computeTotals(
+    subtotal,
+    coupon,
+    deliveryFeeFor(city, delivery),
+    delivery
+  );
 
   return (
     <div className="rounded-xl border border-border bg-card p-6">
@@ -53,7 +71,7 @@ export function OrderSummary({
             −{formatPrice(totals.discount)}
           </Row>
         )}
-        <Row label="Shipping">
+        <Row label={zone ? `Delivery — ${zone.city}` : "Delivery"}>
           {totals.freeShipping ? (
             <span className="text-brass">Free</span>
           ) : mounted ? (
@@ -62,6 +80,11 @@ export function OrderSummary({
             "—"
           )}
         </Row>
+        {!totals.freeShipping && !zone && mounted && (
+          <p className="text-xs text-muted-foreground">
+            Standard rate — enter your city at checkout for the exact charge.
+          </p>
+        )}
       </div>
 
       <Separator className="my-4" />

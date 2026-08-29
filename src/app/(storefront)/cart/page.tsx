@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { Breadcrumbs } from "@/components/shared/breadcrumbs";
 import { CartPageView } from "@/components/cart/cart-page-view";
+import { getDeliverySettings } from "@/lib/repositories/delivery";
 
 export const metadata: Metadata = {
   title: "Your Bag",
@@ -9,7 +10,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-export default function CartPage() {
+export const dynamic = "force-dynamic";
+
+export default async function CartPage() {
+  const delivery = await getDeliverySettings();
   return (
     <div className="container py-8 md:py-12">
       <Breadcrumbs
@@ -19,7 +23,7 @@ export default function CartPage() {
       <h1 className="mb-8 font-serif text-3xl leading-tight md:text-4xl">
         Your Bag
       </h1>
-      <CartPageView />
+      <CartPageView delivery={delivery} />
     </div>
   );
 }

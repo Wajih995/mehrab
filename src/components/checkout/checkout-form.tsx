@@ -25,13 +25,22 @@ import { useMounted } from "@/hooks/use-mounted";
 import { placeOrder } from "@/actions/orders";
 import { computeTotals, validateCoupon } from "@/lib/checkout";
 import {
+  DEFAULT_DELIVERY,
+  deliveryFeeFor,
+  type DeliverySettings,
+} from "@/lib/delivery";
+import {
   PROVINCES,
   checkoutSchema,
   type CheckoutInput,
 } from "@/lib/validations/checkout";
 import { cn } from "@/lib/utils";
 
-export function CheckoutForm() {
+export function CheckoutForm({
+  delivery = DEFAULT_DELIVERY,
+}: {
+  delivery?: DeliverySettings;
+}) {
   const router = useRouter();
   const mounted = useMounted();
   const items = useCart((s) => s.items);
@@ -44,6 +53,7 @@ export function CheckoutForm() {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CheckoutInput>({
     resolver: zodResolver(checkoutSchema),
@@ -97,7 +107,13 @@ export function CheckoutForm() {
     couponCode && validateCoupon(couponCode, subtotal).ok
       ? validateCoupon(couponCode, subtotal).coupon
       : null;
-  const total = computeTotals(subtotal, coupon).total;
+  const city = watch("city");
+  const total = computeTotals(
+    subtotal,
+    coupon,
+    deliveryFeeFor(city, delivery),
+    delivery
+  ).total;
 
   return (
     <form
@@ -198,7 +214,7 @@ export function CheckoutForm() {
 
       {/* Right: summary + submit */}
       <div className="lg:sticky lg:top-28 lg:self-start">
-        <OrderSummary />
+        <OrderSummary delivery={delivery} city={city} />
         <Button
           type="submit"
           size="lg"
