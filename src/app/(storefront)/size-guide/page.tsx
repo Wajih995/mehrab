@@ -60,7 +60,7 @@ export default function SizeGuidePage() {
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               None of these quite right? Choose{" "}
               <strong className="text-foreground">Custom</strong> on any product
-              page and enter your own six measurements — our Lahore atelier cuts
+              page and enter your own six measurements — our Karachi atelier cuts
               the piece to your numbers at no extra charge. Made-to-order pieces
               add 3–4 working days and are exchange-only.
             </p>

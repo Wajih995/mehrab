@@ -25,7 +25,7 @@ export interface DeliverySettings {
 /** Seed used until an admin saves their own rates. */
 export const DEFAULT_DELIVERY: DeliverySettings = {
   defaultFee: 350,
-  freeShippingThreshold: 15000,
+  freeShippingThreshold: 0,
   zones: [
     { city: "Karachi", fee: 150 },
     { city: "Lahore", fee: 250 },

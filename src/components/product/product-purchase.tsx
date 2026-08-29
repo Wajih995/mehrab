@@ -375,7 +375,7 @@ export function ProductPurchase({ product }: { product: Product }) {
           </p>
           <p className="flex items-center gap-2 text-muted-foreground">
             <Truck className="size-4 text-brass" />
-            Free express shipping over Rs 15,000 · COD available
+            Nationwide delivery from Karachi · Cash on Delivery available
           </p>
         </div>
       </div>

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const FAQS = [
   {
     q: "How long does delivery take?",
-    a: "Lahore in 1–2 working days, major cities in 2–3, and the rest of Pakistan in 3–5. Made-to-order sizes add 3–4 days of tailoring time.",
+    a: "Karachi in 1–2 working days, major cities in 2–3, and the rest of Pakistan in 3–5. Made-to-order sizes add 3–4 days of tailoring time.",
   },
   {
     q: "Do you offer Cash on Delivery?",

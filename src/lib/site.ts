@@ -18,7 +18,7 @@ export const siteConfig = {
     email: "mehrabessentials@gmail.com",
     phone: "+92 303 6347222",
     whatsapp: "+92 303 6347222",
-    address: "Business Enclave, Dha phase 2, Ittehad Commercial, Karahi, Pakistan",
+    address: "Business Enclave, Dha phase 2, Ittehad Commercial, Karachi, Pakistan",
   },
   socials: {
     instagram: "https://instagram.com/mehrabessentials",
@@ -27,7 +27,7 @@ export const siteConfig = {
     // youtube: "https://youtube.com/@mehrab",
   },
   announcements: [
-    "Complimentary express shipping on orders over Rs 15,000",
+    "Nationwide delivery from Karachi — Cash on Delivery available",
     "New — The Premium Heritage Collection has arrived",
     "Free size exchange within 7 days · Cash on Delivery available (all tags should be remain on article)",
   ],

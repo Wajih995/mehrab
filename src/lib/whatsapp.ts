@@ -48,8 +48,8 @@ function itemLines(order: OrderRecord): string {
 }
 
 const DELIVERY_ETA: Record<string, string> = {
-  Lahore: "1–2 working days",
-  Karachi: "2–3 working days",
+  Karachi: "1–2 working days",
+  Lahore: "2–3 working days",
   Islamabad: "2–3 working days",
   Rawalpindi: "2–3 working days",
 };
@@ -91,7 +91,7 @@ ${sign}`,
 
     Packed: `${greeting}
 
-Good news — order *${order.orderNumber}* is packed and ready to leave our Lahore atelier.
+Good news — order *${order.orderNumber}* is packed and ready to leave our Karachi atelier.
 
 *Total:* ${cod}
 *Delivery:* ${eta(order.city)} to ${order.city}

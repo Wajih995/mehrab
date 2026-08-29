@@ -29,7 +29,7 @@ export function PremiumBanner() {
           <p className="max-w-md text-sand-50/75 leading-relaxed">
             Long-staple Egyptian cotton, pure Boski, and textured Karandi —
             selected for how they fall, feel, and last. Every seam is
-            hand-finished in our Lahore atelier.
+            hand-finished in our Karachi atelier.
           </p>
           <ul className="grid grid-cols-2 gap-4 py-2 text-sm">
             {[

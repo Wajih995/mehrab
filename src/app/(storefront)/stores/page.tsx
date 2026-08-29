@@ -5,7 +5,7 @@ import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Store Locator",
-  description: "Visit the MEHRAB studio in Lahore, or shop online nationwide.",
+  description: "Visit the MEHRAB studio in Karachi, or shop online nationwide.",
   alternates: { canonical: "/stores" },
 };
 
@@ -16,7 +16,7 @@ export default function StoresPage() {
       title="Store Locator"
       intro="Experience the fabrics in person at our flagship studio — or shop online with nationwide delivery."
     >
-      <InfoSection title="MEHRAB Studio — Lahore">
+      <InfoSection title="MEHRAB Studio — Karachi">
         <p>{siteConfig.contact.address}</p>
         <p>
           Monday to Saturday, 11:00 – 21:00

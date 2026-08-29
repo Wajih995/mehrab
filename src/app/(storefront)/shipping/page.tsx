@@ -5,7 +5,7 @@ import { InfoPage, InfoSection } from "@/components/shared/info-page";
 export const metadata: Metadata = {
   title: "Shipping & Delivery",
   description:
-    "MEHRAB shipping policy — nationwide delivery, express shipping, and cash on delivery across Pakistan.",
+    "MEHRAB shipping policy — nationwide delivery from Karachi and cash on delivery across Pakistan.",
   alternates: { canonical: "/shipping" },
 };
 
@@ -14,12 +14,12 @@ export default function ShippingPage() {
     <InfoPage
       eyebrow="Help"
       title="Shipping & Delivery"
-      intro="Every order is pressed, wrapped, and dispatched from our Lahore atelier."
+      intro="Every order is pressed, wrapped, and dispatched from our Karachi atelier."
     >
       <InfoSection title="Delivery times">
         <ul className="list-disc space-y-1.5 pl-5">
-          <li>Lahore — 1 to 2 working days</li>
-          <li>Karachi, Islamabad, Rawalpindi — 2 to 3 working days</li>
+          <li>Karachi — 1 to 2 working days</li>
+          <li>Lahore, Islamabad, Rawalpindi — 2 to 3 working days</li>
           <li>All other cities — 3 to 5 working days</li>
         </ul>
         <p>
@@ -28,10 +28,10 @@ export default function ShippingPage() {
         </p>
       </InfoSection>
       <InfoSection title="Charges">
-        <ul className="list-disc space-y-1.5 pl-5">
-          <li>Orders over Rs 15,000 — complimentary express shipping</li>
-          <li>Orders under Rs 15,000 — flat Rs 250 nationwide</li>
-        </ul>
+        <p>
+          Delivery is charged by city and shown at checkout before you place
+          the order — Karachi enjoys our lowest rate.
+        </p>
       </InfoSection>
       <InfoSection title="Cash on Delivery">
         <p>

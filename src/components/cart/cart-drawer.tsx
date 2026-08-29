@@ -15,8 +15,6 @@ import { Button } from "@/components/ui/button";
 import { selectSubtotal, useCart } from "@/hooks/use-cart";
 import { formatPrice } from "@/lib/utils";
 
-const FREE_SHIPPING_THRESHOLD = 15000;
-
 /** Global slide-out cart, driven by the Zustand store's `isOpen`. */
 export function CartDrawer() {
   const items = useCart((s) => s.items);
@@ -25,9 +23,6 @@ export function CartDrawer() {
   const updateQuantity = useCart((s) => s.updateQuantity);
   const removeItem = useCart((s) => s.removeItem);
   const subtotal = useCart(selectSubtotal);
-
-  const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
-  const progress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -46,28 +41,6 @@ export function CartDrawer() {
           <EmptyCart onClose={() => setOpen(false)} />
         ) : (
           <>
-            {/* Free-shipping progress */}
-            <div className="border-b px-6 py-4">
-              {remaining > 0 ? (
-                <p className="text-xs text-muted-foreground">
-                  You&apos;re{" "}
-                  <span className="font-medium text-foreground">
-                    {formatPrice(remaining)}
-                  </span>{" "}
-                  away from free express shipping.
-                </p>
-              ) : (
-                <p className="text-xs font-medium text-brass">
-                  Complimentary express shipping unlocked.
-                </p>
-              )}
-              <div className="mt-2 h-1 overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-brass transition-all duration-500 ease-luxe"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-            </div>
 
             <ul className="flex-1 divide-y divide-border overflow-y-auto px-6">
               {items.map((item) => (

@@ -53,7 +53,7 @@ export default function FabricsPage() {
     <InfoPage
       eyebrow="The Material"
       title="Fabrics & Craft"
-      intro="We start with the cloth. Every seam is hand-finished in our Lahore atelier — mother-of-pearl buttons, hand-set collars, colour-fast dyeing."
+      intro="We start with the cloth. Every seam is hand-finished in our Karachi atelier — mother-of-pearl buttons, hand-set collars, colour-fast dyeing."
       wide
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

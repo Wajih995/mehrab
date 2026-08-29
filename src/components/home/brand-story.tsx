@@ -29,7 +29,7 @@ export function BrandStory() {
             </p>
             <p>
               We make one thing, exceptionally well. Every kameez is cut and
-              hand-finished in our Lahore atelier from fabrics we select
+              hand-finished in our Karachi atelier from fabrics we select
               ourselves — because how a garment falls should never be left to
               chance.
             </p>

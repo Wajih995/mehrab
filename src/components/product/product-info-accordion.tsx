@@ -66,7 +66,7 @@ export function ProductInfoAccordion({ product }: { product: Product }) {
         <AccordionTrigger>Delivery</AccordionTrigger>
         <AccordionContent>
           <ul className="space-y-1.5">
-            <li>Complimentary express shipping on orders over Rs 15,000.</li>
+            <li>Delivery charges by city, shown at checkout.</li>
             <li>Standard delivery in 2–4 working days nationwide.</li>
             <li>Cash on Delivery available across Pakistan.</li>
             <li>Each piece ships in signature MEHRAB packaging.</li>

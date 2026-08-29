@@ -3,13 +3,13 @@ import { RefreshCw, ShieldCheck, Truck, Wallet } from "lucide-react";
 const services = [
   {
     icon: Truck,
-    title: "Free Express Shipping",
-    note: "On all orders over Rs 15,000",
+    title: "Nationwide Delivery",
+    note: "From Karachi to all of Pakistan",
   },
   {
     icon: RefreshCw,
     title: "7-Day Easy Exchange",
-    note: "Free size exchange, no questions",
+    note: "Free size exchange — T&Cs apply",
   },
   {
     icon: Wallet,
@@ -19,7 +19,7 @@ const services = [
   {
     icon: ShieldCheck,
     title: "Handmade Guarantee",
-    note: "Crafted in our Lahore atelier",
+    note: "Crafted in our Karachi atelier",
   },
 ];
 

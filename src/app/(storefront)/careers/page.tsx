@@ -6,7 +6,7 @@ import { siteConfig } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Careers",
   description:
-    "Join the MEHRAB atelier — craft, retail and studio roles in Lahore.",
+    "Join the MEHRAB atelier — craft, retail and studio roles in Karachi.",
   alternates: { canonical: "/careers" },
 };
 

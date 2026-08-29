@@ -62,7 +62,7 @@ export async function FeaturedFabrics() {
       <Stagger className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 md:mt-12">
         {fabrics.map((name) => {
           const meta = FABRIC_NOTES[name] ?? {
-            note: "Considered cloth, cut and finished in our Lahore atelier.",
+            note: "Considered cloth, cut and finished in our Karachi atelier.",
             season: "All Season",
           };
           return (

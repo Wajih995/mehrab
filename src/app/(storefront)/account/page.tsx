@@ -33,7 +33,7 @@ const LINKS = [
     href: "/stores",
     icon: MapPin,
     title: "Visit the studio",
-    blurb: "Experience the fabrics in person in Lahore.",
+    blurb: "Experience the fabrics in person in Karachi.",
   },
 ] as const;
 

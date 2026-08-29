@@ -7,7 +7,7 @@ import { img } from "@/lib/data/images";
 export const metadata: Metadata = {
   title: "Our Story",
   description:
-    "MEHRAB crafts premium men's shalwar kameez in Lahore — heritage tailoring, considered fabrics, and a modern, minimal silhouette.",
+    "MEHRAB crafts premium men's shalwar kameez in Karachi — heritage tailoring, considered fabrics, and a modern, minimal silhouette.",
   alternates: { canonical: "/about" },
 };
 
@@ -28,9 +28,9 @@ export default function AboutPage() {
               a silhouette that moves with a modern day.
             </p>
           </InfoSection>
-          <InfoSection title="The Lahore atelier">
+          <InfoSection title="The Karachi atelier">
             <p>
-              Every MEHRAB piece is cut and finished by hand in our Lahore
+              Every MEHRAB piece is cut and finished by hand in our Karachi
               atelier. Collars are hand-set, plackets are embroidered in-house,
               and each garment is pressed and inspected before it leaves.
             </p>
