@@ -10,7 +10,7 @@ import { StarRating } from "@/components/shared/star-rating";
 import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
 import { useMounted } from "@/hooks/use-mounted";
-import { cn, discountPercent, formatPrice } from "@/lib/utils";
+import { cn, discountPercent, formatPrice, sortSizes } from "@/lib/utils";
 import {
   CustomSizeFields,
   type MeasurementDraft,
@@ -258,7 +258,7 @@ export function ProductPurchase({ product }: { product: Product }) {
             <SizeGuideDialog />
           </div>
           <div className="flex flex-wrap gap-2">
-            {product.sizes.map((s) => (
+            {sortSizes(product.sizes).map((s) => (
               <button
                 key={s}
                 onClick={() => {

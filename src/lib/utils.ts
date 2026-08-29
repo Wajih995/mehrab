@@ -54,6 +54,16 @@ export function formatDate(date: Date | string): string {
   }).format(d);
 }
 
+/** Canonical garment-size order for display, smallest first. */
+const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
+
+/** Sort sizes into chart order regardless of how they were stored. */
+export function sortSizes<T extends string>(sizes: readonly T[]): T[] {
+  return [...sizes].sort(
+    (a, b) => SIZE_ORDER.indexOf(a) - SIZE_ORDER.indexOf(b)
+  );
+}
+
 /** Absolute URL helper for metadata / canonical / OG. */
 export function absoluteUrl(path = ""): string {
   // Same fallback chain as siteConfig.url — the real domain, never localhost.

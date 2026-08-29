@@ -41,7 +41,9 @@ export function MobileMenu({ nav }: { nav: MegaMenuSection[] }) {
       <SheetContent side="left" className="w-[86%] max-w-sm p-0">
         <SheetHeader className="border-b">
           <SheetTitle asChild>
-            <Logo size="sm" href={null} />
+            {/* self-start: SheetHeader is a flex column, and a stretched
+                flex child distorts the wordmark. */}
+            <Logo size="sm" href={null} className="self-start" />
           </SheetTitle>
         </SheetHeader>
 

@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { MenuCategory } from "@/lib/menu-categories";
-import { cn, slugify } from "@/lib/utils";
+import { cn, slugify, sortSizes } from "@/lib/utils";
 import { compressImage, dataUrlBytes } from "@/lib/image-compress";
 import type {
   FabricType,
@@ -187,7 +187,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       season,
       collectionSlugs,
       colors,
-      sizes,
+      sizes: sortSizes(sizes),
       rating: product?.rating ?? 5,
       reviewCount: product?.reviewCount ?? 0,
       badges: [
