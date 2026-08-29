@@ -18,7 +18,8 @@ export const siteConfig = {
     email: "mehrabessentials@gmail.com",
     phone: "+92 303 6347222",
     whatsapp: "+92 303 6347222",
-    address: "Business Enclave, Dha phase 2, Ittehad Commercial, Karachi, Pakistan",
+    address:
+      "Business Enclave, 12th Commercial Street, Khayaban-e-Ittehad, DHA Phase 2 Extension, Karachi, Pakistan",
   },
   socials: {
     instagram: "https://instagram.com/mehrabessentials",
