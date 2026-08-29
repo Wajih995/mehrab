@@ -8,11 +8,10 @@ export const siteConfig = {
   tagline: "Elevate Tradition",
   description:
     "MEHRAB crafts premium men's Shalwar Kameez — heritage tailoring, considered fabrics, and a modern, minimal silhouette. Handmade in Pakistan.",
-  url:
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    (process.env.NODE_ENV === "production"
-      ? "https://mehrabessentials.com"
-      : "http://localhost:3000"),
+  // Customer-facing links (emails, WhatsApp, bills) always carry the real
+  // domain — a localhost link must never reach a customer, even from a dev
+  // machine. NEXT_PUBLIC_SITE_URL still overrides (e.g. a staging domain).
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://mehrabessentials.com",
   locale: "en_PK",
   currency: "PKR",
   contact: {

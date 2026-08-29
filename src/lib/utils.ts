@@ -56,6 +56,8 @@ export function formatDate(date: Date | string): string {
 
 /** Absolute URL helper for metadata / canonical / OG. */
 export function absoluteUrl(path = ""): string {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  // Same fallback chain as siteConfig.url — the real domain, never localhost.
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://mehrabessentials.com";
   return `${base}${path.startsWith("/") ? path : `/${path}`}`;
 }
