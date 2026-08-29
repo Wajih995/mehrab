@@ -12,7 +12,7 @@ import { getDeliverySettings } from "@/lib/repositories/delivery";
 import { placeOrderSchema, type PlaceOrderInput } from "@/lib/validations/checkout";
 import { addOrder, setOrderStatus } from "@/lib/server-orders";
 import { ORDER_STATUSES, type OrderRecord, type OrderStatus } from "@/lib/orders-shared";
-import { sendOrderConfirmationEmail } from "@/lib/notifications/order-confirmation";
+import { sendOrderNotifications } from "@/lib/notifications/order-confirmation";
 
 export interface PlaceOrderResult {
   ok: boolean;
@@ -139,7 +139,8 @@ export async function placeOrder(
   }
 
   // Notify AFTER the order is safely persisted; never fails the order.
-  await sendOrderConfirmationEmail(record);
+  // Customer confirmation + merchant new-order alert.
+  await sendOrderNotifications(record);
   // TODO(sms): send the COD confirmation SMS here once a gateway is set up.
 
   revalidateOrders();

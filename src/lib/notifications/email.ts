@@ -29,6 +29,8 @@ export async function sendEmail(input: {
   to: string;
   subject: string;
   html: string;
+  /** Overrides EMAIL_REPLY_TO for this message. */
+  replyTo?: string;
 }): Promise<EmailResult> {
   if (!isEmailConfigured) {
     console.info(
@@ -49,7 +51,9 @@ export async function sendEmail(input: {
         to: [input.to],
         subject: input.subject,
         html: input.html,
-        ...(REPLY_TO ? { reply_to: REPLY_TO } : {}),
+        ...(input.replyTo ?? REPLY_TO
+          ? { reply_to: input.replyTo ?? REPLY_TO }
+          : {}),
       }),
     });
 
