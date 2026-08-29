@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import type { MenuCategory } from "@/lib/menu-categories";
 import { cn, slugify } from "@/lib/utils";
+import { compressImage, dataUrlBytes } from "@/lib/image-compress";
 import type {
   FabricType,
   Product,
@@ -43,7 +44,12 @@ const FABRICS: FabricType[] = [
 ];
 const SEASONS: Season[] = ["All Season", "Summer", "Winter", "Festive"];
 const SIZES: SizeCode[] = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
-const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
+// Original files may be big phone photos — they're compressed in the
+// browser before upload, so the cap only guards against absurd inputs.
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+// After compression the encoded image must fit comfortably in a Server
+// Action body alongside its siblings.
+const MAX_ENCODED_BYTES = 2 * 1024 * 1024;
 
 interface ProductFormProps {
   /** Existing product for edit mode; omit to create. */
@@ -100,22 +106,48 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     setImageUrl("");
   };
 
-  const onFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > MAX_UPLOAD_BYTES) {
-      toast.error("Image is too large (max 2MB). Paste a URL instead.");
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImages((prev) => [
-        ...prev,
-        { url: reader.result as string, alt: name || "Product image" },
-      ]);
-    };
-    reader.readAsDataURL(file);
+  const onFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
     e.target.value = "";
+    if (files.length === 0) return;
+
+    let added = 0;
+    let savedFrom = 0; // original bytes of the photos we optimised
+    let savedTo = 0;
+
+    for (const file of files) {
+      if (file.size > MAX_UPLOAD_BYTES) {
+        toast.error(`${file.name} is too large (max 25MB).`);
+        continue;
+      }
+      try {
+        const url = await compressImage(file);
+        const encoded = dataUrlBytes(url);
+        if (encoded > MAX_ENCODED_BYTES) {
+          toast.error(`${file.name} could not be compressed enough.`);
+          continue;
+        }
+        setImages((prev) => [
+          ...prev,
+          { url, alt: name || "Product image" },
+        ]);
+        added++;
+        if (file.size > 1024 * 1024) {
+          savedFrom += file.size;
+          savedTo += encoded;
+        }
+      } catch {
+        toast.error(`${file.name} could not be read as an image.`);
+      }
+    }
+
+    if (added > 0 && savedFrom > 0) {
+      toast.success(
+        `${added} image${added === 1 ? "" : "s"} added — optimised ${(savedFrom / 1024 / 1024).toFixed(1)}MB → ${Math.round(savedTo / 1024)}KB`
+      );
+    } else if (added > 1) {
+      toast.success(`${added} images added`);
+    }
   };
 
   const toggleSize = (s: SizeCode) =>
@@ -348,7 +380,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                 </div>
               ))}
               <label className="grid aspect-[3/4] w-24 cursor-pointer place-items-center rounded-md border border-dashed border-border text-muted-foreground transition-colors hover:border-brass hover:text-brass">
-                <input type="file" accept="image/*" className="hidden" onChange={onFileUpload} />
+                <input type="file" accept="image/*" multiple className="hidden" onChange={onFileUpload} />
                 <div className="flex flex-col items-center gap-1 text-center">
                   <Upload className="size-5" />
                   <span className="text-2xs">Upload</span>
@@ -371,7 +403,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
               </Button>
             </div>
             <p className="mt-2 text-2xs text-muted-foreground">
-              First image is the primary. Uploads max 2MB (stored locally for demo).
+              First image is the primary. Large photos are optimised automatically.
             </p>
           </Card>
 
