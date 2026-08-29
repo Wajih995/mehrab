@@ -50,6 +50,8 @@ function scalarData(product: Product) {
       (product.specifications as unknown as Prisma.InputJsonValue) ??
       Prisma.JsonNull,
     careInstructions: product.careInstructions ?? [],
+    metaTitle: product.metaTitle?.trim() || null,
+    metaDescription: product.metaDescription?.trim() || null,
   };
 }
 

@@ -83,6 +83,10 @@ export function ProductForm({ product, categories }: ProductFormProps) {
   const [isNew, setIsNew] = useState(product?.isNew ?? false);
   const [isBestSeller, setIsBestSeller] = useState(product?.isBestSeller ?? false);
   const [imageUrl, setImageUrl] = useState("");
+  const [metaTitle, setMetaTitle] = useState(product?.metaTitle ?? "");
+  const [metaDescription, setMetaDescription] = useState(
+    product?.metaDescription ?? ""
+  );
 
   // Keep slug in sync while creating (unless the user has edited it).
   const onNameChange = (v: string) => {
@@ -125,6 +129,11 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         : [...prev, slugValue]
     );
 
+  // Mirrors the fallback in the product page generateMetadata.
+  const seoTitleFallback = `${name || "Product name"} — ${
+    subtitle || "Men's Shalwar Kameez"
+  }`;
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return toast.error("Product name is required");
@@ -159,6 +168,8 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       isBestSeller,
       specifications: product?.specifications,
       careInstructions: product?.careInstructions,
+      metaTitle: metaTitle.trim() || undefined,
+      metaDescription: metaDescription.trim() || undefined,
       createdAt: product?.createdAt ?? new Date().toISOString().slice(0, 10),
     };
 
@@ -232,6 +243,84 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                   className="flex w-full rounded-md border border-input bg-transparent px-3.5 py-2.5 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:border-brass focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brass"
                 />
               </FieldRow>
+            </div>
+          </Card>
+
+          <Card title="Search engine listing">
+            <p className="-mt-2 mb-4 text-xs text-muted-foreground">
+              How this product appears on Google. Leave blank to fall back to
+              the product name and description.
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <div className="mb-1.5 flex items-baseline justify-between">
+                  <Label className="text-xs text-muted-foreground">
+                    Meta title
+                  </Label>
+                  <span
+                    className={cn(
+                      "text-xs tabular-nums",
+                      metaTitle.length > 60
+                        ? "text-destructive"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {metaTitle.length}/60
+                  </span>
+                </div>
+                <Input
+                  value={metaTitle}
+                  onChange={(e) => setMetaTitle(e.target.value)}
+                  placeholder={seoTitleFallback}
+                />
+              </div>
+
+              <div>
+                <div className="mb-1.5 flex items-baseline justify-between">
+                  <Label className="text-xs text-muted-foreground">
+                    Meta description
+                  </Label>
+                  <span
+                    className={cn(
+                      "text-xs tabular-nums",
+                      metaDescription.length > 160
+                        ? "text-destructive"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {metaDescription.length}/160
+                  </span>
+                </div>
+                <textarea
+                  value={metaDescription}
+                  onChange={(e) => setMetaDescription(e.target.value)}
+                  rows={3}
+                  placeholder="Pure Egyptian cotton kameez, hand-finished in Lahore. Free delivery over Rs 15,000 · Cash on Delivery."
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-brass"
+                />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Aim for 150–160 characters. Google truncates beyond that.
+                </p>
+              </div>
+
+              {/* Live search-result preview */}
+              <div className="rounded-lg border border-border bg-secondary/30 p-4">
+                <p className="mb-2 text-2xs uppercase tracking-wide2 text-muted-foreground">
+                  Preview
+                </p>
+                <p className="truncate text-xs text-muted-foreground">
+                  mehrabessentials.com › products › {slug || "product-slug"}
+                </p>
+                <p className="mt-0.5 truncate text-base text-[#1a0dab] dark:text-[#8ab4f8]">
+                  {metaTitle.trim() || seoTitleFallback}
+                </p>
+                <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                  {metaDescription.trim() ||
+                    description.slice(0, 160) ||
+                    "Add a description to see it here."}
+                </p>
+              </div>
             </div>
           </Card>
 

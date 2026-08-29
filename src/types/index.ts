@@ -83,6 +83,10 @@ export interface Product {
   isBestSeller?: boolean;
   specifications?: Record<string, string>;
   careInstructions?: string[];
+  /** SEO <title> override; falls back to "Name — Subtitle". */
+  metaTitle?: string;
+  /** SEO meta description override; falls back to the description. */
+  metaDescription?: string;
   createdAt: string;
 }
 

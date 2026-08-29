@@ -39,14 +39,22 @@ export async function generateMetadata({
   const product = await getProductBySlug(slug);
   if (!product) return { title: "Product not found" };
 
-  const title = `${product.name} — ${product.subtitle ?? "Men's Shalwar Kameez"}`;
+  // Admin-entered SEO wins; otherwise derive from the product itself.
+  const customTitle = product.metaTitle?.trim();
+  const title =
+    customTitle || `${product.name} — ${product.subtitle ?? "Men's Shalwar Kameez"}`;
+  const description =
+    product.metaDescription?.trim() || product.description.slice(0, 160);
+
   return {
-    title,
-    description: product.description.slice(0, 160),
+    // A hand-written meta title is used verbatim; the root layout's
+    // "%s · MEHRAB" template would otherwise duplicate the brand name.
+    title: customTitle ? { absolute: customTitle } : title,
+    description,
     alternates: { canonical: `/products/${slug}` },
     openGraph: {
       title,
-      description: product.description.slice(0, 160),
+      description,
       type: "website",
       images: product.images.map((img) => ({ url: img.url, alt: img.alt })),
     },

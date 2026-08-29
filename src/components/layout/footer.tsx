@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Instagram, Youtube } from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
 
 import { Logo } from "@/components/layout/logo";
 import { Separator } from "@/components/ui/separator";
@@ -44,9 +44,6 @@ export function Footer() {
             </SocialLink>
             <SocialLink href={siteConfig.socials.facebook} label="Facebook">
               <Facebook className="size-4" />
-            </SocialLink>
-            <SocialLink href={siteConfig.socials.youtube} label="YouTube">
-              <Youtube className="size-4" />
             </SocialLink>
           </div>
         </div>

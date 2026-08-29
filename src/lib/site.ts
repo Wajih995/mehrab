@@ -12,21 +12,21 @@ export const siteConfig = {
   locale: "en_PK",
   currency: "PKR",
   contact: {
-    email: "care@mehrab.pk",
-    phone: "+92 300 1234567",
-    whatsapp: "+92 300 1234567",
-    address: "Studio 04, Fashion District, Lahore, Pakistan",
+    email: "mehrabessentials@gmail.com",
+    phone: "+92 303 6347222",
+    whatsapp: "+92 303 6347222",
+    address: "Business Enclave, Dha phase 2, Ittehad Commercial, Karahi, Pakistan",
   },
   socials: {
-    instagram: "https://instagram.com/mehrab",
-    facebook: "https://facebook.com/mehrab",
-    tiktok: "https://tiktok.com/@mehrab",
-    youtube: "https://youtube.com/@mehrab",
+    instagram: "https://instagram.com/mehrabessentials",
+    facebook: "https://facebook.com/mehrabessentials",
+    // tiktok: "https://tiktok.com/@mehrab",
+    // youtube: "https://youtube.com/@mehrab",
   },
   announcements: [
     "Complimentary express shipping on orders over Rs 15,000",
-    "New — The Winter Heritage Collection has arrived",
-    "Free size exchange within 7 days · Cash on Delivery available",
+    "New — The Premium Heritage Collection has arrived",
+    "Free size exchange within 7 days · Cash on Delivery available (all tags should be remain on article)",
   ],
 } as const;
 

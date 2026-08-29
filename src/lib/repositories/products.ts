@@ -66,6 +66,8 @@ function mapProduct(p: DbProduct): Product {
     specifications:
       (p.specifications as unknown as Record<string, string>) ?? undefined,
     careInstructions: p.careInstructions,
+    metaTitle: p.metaTitle ?? undefined,
+    metaDescription: p.metaDescription ?? undefined,
     createdAt:
       p.createdAt instanceof Date
         ? p.createdAt.toISOString().slice(0, 10)
