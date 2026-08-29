@@ -36,7 +36,8 @@ export function toWhatsAppNumber(phone: string): string {
 function itemLines(order: OrderRecord): string {
   return order.items
     .map((i) => {
-      const line = `• ${i.name} (${i.color} / ${i.size}) x${i.quantity}`;
+      const bottom = i.bottomStyle ? ` / ${i.bottomStyle}` : "";
+      const line = `• ${i.name} (${i.color} / ${i.size}${bottom}) x${i.quantity}`;
       if (!i.custom) return line;
       const m = CUSTOM_FIELDS.map(
         (f) => `${f.fullLabel} ${i.custom![f.key]}"`

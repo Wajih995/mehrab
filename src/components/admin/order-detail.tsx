@@ -114,6 +114,11 @@ export function OrderDetail({ order }: { order: OrderRecord }) {
                     <span className="rounded bg-secondary px-1.5 py-0.5 font-medium text-foreground">
                       Size {item.size}
                     </span>
+                    {item.bottomStyle && (
+                      <span className="rounded border border-border px-1.5 py-0.5 font-medium text-foreground">
+                        {item.bottomStyle}
+                      </span>
+                    )}
                     <span className="text-muted-foreground">
                       {item.color} · Qty {item.quantity}
                     </span>

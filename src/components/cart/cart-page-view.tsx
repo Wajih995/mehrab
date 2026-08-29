@@ -78,6 +78,7 @@ export function CartPageView({
                     </Link>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {item.color} · Size {item.size}
+                      {item.bottomStyle && ` · ${item.bottomStyle}`}
                       {item.custom && (
                         <span className="mt-1 block text-xs text-brass">
                           Made to order — {formatMeasurements(item.custom)}

@@ -3,12 +3,8 @@ import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/shared/breadcrumbs";
 import { Logo } from "@/components/layout/logo";
 import { SizeDiagram } from "@/components/shared/size-diagram";
-import {
-  CHART_SIZES,
-  KAMEEZ_ROWS,
-  SHALWAR_ROWS,
-  type MeasurementRow,
-} from "@/lib/data/size-chart";
+import { SizeChartTables } from "@/components/shared/size-chart-tables";
+import { KAMEEZ_ROWS, SHALWAR_ROWS } from "@/lib/data/size-chart";
 
 export const metadata: Metadata = {
   title: "Size Guide",
@@ -34,12 +30,7 @@ export default function SizeGuidePage() {
         <div>
           <Logo size="md" href={null} className="mb-10" />
 
-          <MeasurementTable title="Kameez" rows={KAMEEZ_ROWS} />
-          <MeasurementTable title="Shalwar" rows={SHALWAR_ROWS} className="mt-10" />
-
-          <p className="mt-6 text-sm text-muted-foreground">
-            All given measurements are in inches.
-          </p>
+          <SizeChartTables />
 
           {/* How to measure */}
           <div className="mt-12">
@@ -90,56 +81,3 @@ export default function SizeGuidePage() {
   );
 }
 
-function MeasurementTable({
-  title,
-  rows,
-  className,
-}: {
-  title: string;
-  rows: MeasurementRow[];
-  className?: string;
-}) {
-  return (
-    <section className={className}>
-      <h2 className="mb-3 font-serif text-xl md:text-2xl">{title}</h2>
-      <div className="overflow-x-auto rounded-lg border border-border">
-        <table className="w-full min-w-[520px] text-sm">
-          <thead>
-            <tr className="border-b border-border bg-secondary/40 text-xs uppercase tracking-wide2 text-muted-foreground">
-              <th className="w-10 px-3 py-3 text-left font-medium" />
-              <th className="px-3 py-3 text-left font-medium">Size</th>
-              {CHART_SIZES.map((s) => (
-                <th key={s} className="px-3 py-3 text-center font-medium">
-                  {s}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr
-                key={row.key}
-                className="border-b border-border/60 last:border-0"
-              >
-                <td className="px-3 py-3 text-center font-medium text-brass">
-                  {row.ref}
-                </td>
-                <td className="whitespace-nowrap px-3 py-3 uppercase text-muted-foreground">
-                  {row.label}
-                </td>
-                {CHART_SIZES.map((s) => (
-                  <td
-                    key={s}
-                    className="px-3 py-3 text-center tabular-nums"
-                  >
-                    {row.values[s]}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  );
-}

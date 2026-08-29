@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { Check, Heart, Minus, Plus, Share2, Truck } from "lucide-react";
 import { toast } from "sonner";
 
@@ -16,8 +15,15 @@ import {
   CustomSizeFields,
   type MeasurementDraft,
 } from "@/components/product/custom-size-fields";
+import { SizeGuideDialog } from "@/components/product/size-guide-dialog";
 import { CUSTOM_FIELDS, MEASUREMENT_LIMITS } from "@/lib/data/size-chart";
-import { CUSTOM_SIZE, type CustomMeasurements, type Product } from "@/types";
+import {
+  BOTTOM_STYLES,
+  CUSTOM_SIZE,
+  type BottomStyle,
+  type CustomMeasurements,
+  type Product,
+} from "@/types";
 
 export function ProductPurchase({ product }: { product: Product }) {
   const mounted = useMounted();
@@ -28,6 +34,8 @@ export function ProductPurchase({ product }: { product: Product }) {
   const [color, setColor] = useState(product.colors[0]?.name ?? "");
   const [size, setSize] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
+  // Shalwar is the standard pairing; the customer can switch to Pajama.
+  const [bottomStyle, setBottomStyle] = useState<BottomStyle>("Shalwar");
   const [sizeError, setSizeError] = useState(false);
   const [draft, setDraft] = useState<MeasurementDraft>({});
   const [measureErrors, setMeasureErrors] = useState<
@@ -108,12 +116,13 @@ export function ProductPurchase({ product }: { product: Product }) {
       size: size as never,
       color,
       quantity: qty,
+      bottomStyle,
       custom,
     });
     toast.success(`${product.name} added to your bag`, {
       description: isCustom
-        ? `${color} · Made to order · Qty ${qty}`
-        : `${color} · Size ${size} · Qty ${qty}`,
+        ? `${color} · ${bottomStyle} · Made to order · Qty ${qty}`
+        : `${color} · ${bottomStyle} · Size ${size} · Qty ${qty}`,
     });
   };
 
@@ -212,6 +221,31 @@ export function ProductPurchase({ product }: { product: Product }) {
           </div>
         )}
 
+        {/* Bottom garment */}
+        <div className="mt-7">
+          <div className="mb-2.5 flex items-center gap-2 text-sm">
+            <span className="font-medium">Bottom</span>
+            <span className="text-muted-foreground">— {bottomStyle}</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {BOTTOM_STYLES.map((style) => (
+              <button
+                key={style}
+                onClick={() => setBottomStyle(style)}
+                aria-pressed={bottomStyle === style}
+                className={cn(
+                  "grid h-11 place-items-center rounded-md border px-5 text-sm font-medium transition-colors",
+                  bottomStyle === style
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-input text-foreground hover:border-brass"
+                )}
+              >
+                {style}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Size */}
         <div id="size-selector" className="mt-7">
           <div className="mb-2.5 flex items-center justify-between">
@@ -221,12 +255,7 @@ export function ProductPurchase({ product }: { product: Product }) {
                 <span className="text-destructive">— required</span>
               )}
             </span>
-            <Link
-              href="/size-guide"
-              className="link-underline text-xs text-muted-foreground"
-            >
-              Size guide
-            </Link>
+            <SizeGuideDialog />
           </div>
           <div className="flex flex-wrap gap-2">
             {product.sizes.map((s) => (

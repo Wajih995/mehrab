@@ -221,6 +221,8 @@ model OrderItem {
   size      String
   color     String
   quantity  Int
+  /// "Shalwar" or "Pajama" — the bottom garment the customer chose.
+  bottomStyle String?
   /// Made-to-order measurements (inches) when size is "Custom".
   custom    Json?
 

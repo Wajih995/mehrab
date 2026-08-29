@@ -41,11 +41,13 @@ const sameLine = (
   productId: string,
   size: string,
   color: string,
-  custom?: CartItem["custom"]
+  custom?: CartItem["custom"],
+  bottomStyle?: CartItem["bottomStyle"]
 ) =>
   a.productId === productId &&
   a.size === size &&
   a.color === color &&
+  a.bottomStyle === bottomStyle &&
   customKey(a) === customKey({ custom });
 
 export const useCart = create<CartState>()(
@@ -58,13 +60,27 @@ export const useCart = create<CartState>()(
       addItem: (item) =>
         set((state) => {
           const existing = state.items.find((i) =>
-            sameLine(i, item.productId, item.size, item.color, item.custom)
+            sameLine(
+              i,
+              item.productId,
+              item.size,
+              item.color,
+              item.custom,
+              item.bottomStyle
+            )
           );
           if (existing) {
             return {
               isOpen: true,
               items: state.items.map((i) =>
-                sameLine(i, item.productId, item.size, item.color, item.custom)
+                sameLine(
+                  i,
+                  item.productId,
+                  item.size,
+                  item.color,
+                  item.custom,
+                  item.bottomStyle
+                )
                   ? { ...i, quantity: i.quantity + item.quantity }
                   : i
               ),

@@ -123,6 +123,7 @@ export async function placeOrder(
             size: i.size,
             color: i.color,
             quantity: i.quantity,
+            bottomStyle: i.bottomStyle ?? null,
             custom: i.custom
               ? (i.custom as unknown as Prisma.InputJsonValue)
               : Prisma.JsonNull,

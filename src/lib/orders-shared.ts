@@ -1,4 +1,4 @@
-import type { CustomMeasurements } from "@/types";
+import type { BottomStyle, CustomMeasurements } from "@/types";
 import type { OrderTotals } from "@/lib/checkout";
 
 /**
@@ -27,6 +27,8 @@ export interface OrderLine {
   size: string;
   color: string;
   quantity: number;
+  /** Shalwar or Pajama, as chosen on the product page. */
+  bottomStyle?: BottomStyle;
   /** Made-to-order measurements when size is "Custom". */
   custom?: CustomMeasurements;
 }

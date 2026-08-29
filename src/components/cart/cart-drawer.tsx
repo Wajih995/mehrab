@@ -101,6 +101,7 @@ export function CartDrawer() {
                         </Link>
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           {item.color} · {item.size}
+                          {item.bottomStyle && ` · ${item.bottomStyle}`}
                           {item.custom && (
                             <span className="mt-0.5 block text-2xs text-brass">
                               Made to order

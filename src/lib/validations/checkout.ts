@@ -56,6 +56,7 @@ export const orderItemSchema = z.object({
   size: z.string(),
   color: z.string(),
   quantity: z.number().int().positive(),
+  bottomStyle: z.enum(["Shalwar", "Pajama"]).optional(),
   custom: customMeasurementsSchema.optional(),
 });
 

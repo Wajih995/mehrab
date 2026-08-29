@@ -106,7 +106,9 @@ export function ThermalReceipt({ order }: { order: OrderRecord }) {
                 <td className="py-0.5 pr-1">
                   {item.name}
                   <span className="block text-[8px]">
-                    {item.color} / {item.size} @ {rs(item.price)}
+                    {item.color} / {item.size}
+                    {item.bottomStyle ? ` / ${item.bottomStyle}` : ""} @{" "}
+                    {rs(item.price)}
                   </span>
                   {item.custom && (
                     <span className="mt-0.5 block border-l-2 border-black pl-1 text-[8px] font-bold">

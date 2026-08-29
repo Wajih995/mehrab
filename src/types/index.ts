@@ -32,6 +32,10 @@ export type SizeCode = "XS" | "S" | "M" | "L" | "XL" | "XXL" | "3XL";
 /** Sentinel size for made-to-order pieces cut to the customer's numbers. */
 export const CUSTOM_SIZE = "Custom";
 
+/** The bottom garment a kameez is paired with. */
+export const BOTTOM_STYLES = ["Shalwar", "Pajama"] as const;
+export type BottomStyle = (typeof BOTTOM_STYLES)[number];
+
 /** Made-to-order measurements, in inches. Keys match the size chart rows. */
 export interface CustomMeasurements {
   collar: number;
@@ -125,6 +129,8 @@ export interface CartItem {
   size: SizeCode | typeof CUSTOM_SIZE;
   color: string;
   quantity: number;
+  /** Shalwar or Pajama — the bottom the customer chose. */
+  bottomStyle?: BottomStyle;
   /** Present only for made-to-order lines. */
   custom?: CustomMeasurements;
 }

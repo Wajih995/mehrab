@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { isDbConfigured } from "@/lib/env";
 import { readOrders, findOrder } from "@/lib/server-orders";
 import type { OrderRecord, OrderStatus } from "@/lib/orders-shared";
-import type { CustomMeasurements } from "@/types";
+import type { BottomStyle, CustomMeasurements } from "@/types";
 
 /* ── Prisma → domain mappers ───────────────────────────────── */
 
@@ -46,6 +46,7 @@ function mapOrder(o: DbOrder): OrderRecord {
       size: i.size,
       color: i.color,
       quantity: i.quantity,
+      bottomStyle: (i.bottomStyle as BottomStyle | null) ?? undefined,
       custom: (i.custom as CustomMeasurements | null) ?? undefined,
     })),
     totals: {
