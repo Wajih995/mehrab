@@ -243,29 +243,51 @@ const CATEGORY_FALLBACKS = [
 
 /**
  * Every category in the live main nav, with its product count and a cover
- * image (first product in the category, else a rotating brand placeholder).
- * This is what homepage/collections browse sections should render, so they
- * always mirror the admin-managed menu.
+ * image. This is what homepage/collections browse sections should render, so
+ * they always mirror the admin-managed menu.
+ *
+ * Categories overlap — one kameez can sit in New Arrivals, Wash & Wear and
+ * Premium at once — so taking each category's first product image showed the
+ * same photo on several cards. Cover images are therefore claimed card by
+ * card: each takes the first image no earlier card has used, preferring a
+ * different garment over a second shot of one already shown.
+ *
+ * The choice is deterministic rather than random so a card keeps the same
+ * cover between renders and requests; a per-request random pick would change
+ * the page on every load and could still repeat.
  */
 export async function getMenuCategoryViews(): Promise<MenuCategoryView[]> {
   const nav = await getMainNav();
   const cats = menuCategories(nav);
-  const views = await Promise.all(
-    cats.map(async (c, i) => {
-      const view = await getCollectionView(c.slug);
-      const products = view?.products ?? [];
-      return {
-        slug: c.slug,
-        label: c.label,
-        href: `/collections/${c.slug}`,
-        image:
-          products[0]?.images[0]?.url ??
-          (view?.image || CATEGORY_FALLBACKS[i % CATEGORY_FALLBACKS.length]),
-        count: products.length,
-      };
-    })
-  );
-  return views;
+  const views = await Promise.all(cats.map((c) => getCollectionView(c.slug)));
+
+  const claimed = new Set<string>();
+
+  return cats.map((c, i) => {
+    const view = views[i];
+    const products = view?.products ?? [];
+
+    // One shot per garment first, then the spare shots of each.
+    const candidates = [
+      ...products.map((p) => p.images[0]?.url),
+      ...products.flatMap((p) => p.images.slice(1).map((img) => img.url)),
+    ].filter((url): url is string => Boolean(url));
+
+    const image =
+      candidates.find((url) => !claimed.has(url)) ??
+      candidates[0] ??
+      (view?.image || CATEGORY_FALLBACKS[i % CATEGORY_FALLBACKS.length]);
+
+    claimed.add(image);
+
+    return {
+      slug: c.slug,
+      label: c.label,
+      href: `/collections/${c.slug}`,
+      image,
+      count: products.length,
+    };
+  });
 }
 
 export async function getProductReviews(
