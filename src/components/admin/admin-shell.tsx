@@ -46,7 +46,7 @@ const NAV: NavItem[] = [
   { label: "Delivery", href: "/admin/delivery", icon: Truck },
   { label: "Customers", href: "/admin/customers", icon: Users, disabled: true },
   { label: "Coupons", href: "/admin/coupons", icon: Ticket, disabled: true },
-  { label: "Reviews", href: "/admin/reviews", icon: Star, disabled: true },
+  { label: "Reviews", href: "/admin/reviews", icon: Star },
   { label: "Settings", href: "/admin/settings", icon: Settings, disabled: true },
 ];
 

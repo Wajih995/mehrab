@@ -147,6 +147,8 @@ model Review {
   title     String
   body      String   @db.Text
   verified  Boolean  @default(false)
+  /// Public submissions are hidden until an admin approves them.
+  approved  Boolean  @default(false)
   createdAt DateTime @default(now())
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)

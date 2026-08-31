@@ -26,7 +26,13 @@ import {
   type Product,
 } from "@/types";
 
-export function ProductPurchase({ product }: { product: Product }) {
+export function ProductPurchase({
+  product,
+  rating,
+}: {
+  product: Product;
+  rating?: { average: number; count: number };
+}) {
   const mounted = useMounted();
   const addItem = useCart((s) => s.addItem);
   const inWishlist = useWishlist((s) => s.ids.includes(product.id));
@@ -169,13 +175,22 @@ export function ProductPurchase({ product }: { product: Product }) {
               </span>
             </p>
           )}
-          <div className="mt-3">
-            <StarRating
-              rating={product.rating}
-              count={product.reviewCount}
-              showValue
-            />
-          </div>
+          {rating && rating.count > 0 ? (
+            <div className="mt-3">
+              <StarRating
+                rating={rating.average}
+                count={rating.count}
+                showValue
+              />
+            </div>
+          ) : (
+            <a
+              href="#reviews"
+              className="mt-3 inline-block text-xs text-muted-foreground underline-offset-4 hover:underline"
+            >
+              No reviews yet — be the first
+            </a>
+          )}
           <div className="mt-5 flex items-baseline gap-3">
             <span className="font-serif text-2xl">
               {formatPrice(product.price)}

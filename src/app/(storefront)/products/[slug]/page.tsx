@@ -14,8 +14,11 @@ import {
   getProducts,
   getProductBySlug,
   getRelated,
-  getProductReviews,
 } from "@/lib/repositories/products";
+import {
+  getApprovedReviews,
+  getRatingSummary,
+} from "@/lib/repositories/reviews";
 import { siteConfig } from "@/lib/site";
 import { absoluteUrl } from "@/lib/utils";
 
@@ -70,9 +73,10 @@ export default async function ProductPage({
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const [related, reviews] = await Promise.all([
+  const [related, reviews, rating] = await Promise.all([
     getRelated(slug),
-    getProductReviews(product.id, 4),
+    getApprovedReviews(product.id),
+    getRatingSummary(product.id),
   ]);
   const primaryCollection = product.collectionSlugs[0];
 
@@ -84,11 +88,15 @@ export default async function ProductPage({
     description: product.description,
     sku: product.id,
     brand: { "@type": "Brand", name: siteConfig.name },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: product.rating,
-      reviewCount: product.reviewCount,
-    },
+    ...(rating.count > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: Number(rating.average.toFixed(1)),
+            reviewCount: rating.count,
+          },
+        }
+      : {}),
     offers: {
       "@type": "Offer",
       price: product.price,
@@ -143,7 +151,7 @@ export default async function ProductPage({
           <div className="lg:sticky lg:top-28 lg:self-start">
             <ProductGallery images={product.images} />
           </div>
-          <ProductPurchase product={product} />
+          <ProductPurchase product={product} rating={rating} />
         </div>
 
         {/* Details */}
@@ -164,7 +172,7 @@ export default async function ProductPage({
 
         {/* Reviews */}
         <div className="mt-16 border-t border-border pt-12 lg:mt-24">
-          <ProductReviews product={product} reviews={reviews} />
+          <ProductReviews product={product} reviews={reviews} rating={rating} />
         </div>
       </div>
 
