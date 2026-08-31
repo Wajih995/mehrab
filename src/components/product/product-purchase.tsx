@@ -20,6 +20,7 @@ import { CUSTOM_FIELDS, MEASUREMENT_LIMITS } from "@/lib/data/size-chart";
 import {
   BOTTOM_STYLES,
   CUSTOM_SIZE,
+  ONE_SIZE,
   type BottomStyle,
   type CustomMeasurements,
   type Product,
@@ -43,6 +44,8 @@ export function ProductPurchase({ product }: { product: Product }) {
   >({});
 
   const isCustom = size === CUSTOM_SIZE;
+  // Products saved without sizes are one-size: no selector, no gate.
+  const hasSizes = product.sizes.length > 0;
 
   const setMeasurement = (key: keyof CustomMeasurements, value: string) => {
     setDraft((d) => ({ ...d, [key]: value }));
@@ -89,7 +92,7 @@ export function ProductPurchase({ product }: { product: Product }) {
 
   const handleAdd = () => {
     if (!product.inStock) return;
-    if (!size) {
+    if (hasSizes && !size) {
       setSizeError(true);
       toast.error("Please select a size");
       document
@@ -113,7 +116,7 @@ export function ProductPurchase({ product }: { product: Product }) {
       name: product.name,
       image: product.images[0].url,
       price: product.price,
-      size: size as never,
+      size: (hasSizes ? size : ONE_SIZE) as never,
       color,
       quantity: qty,
       bottomStyle,
@@ -122,7 +125,9 @@ export function ProductPurchase({ product }: { product: Product }) {
     toast.success(`${product.name} added to your bag`, {
       description: isCustom
         ? `${color} · ${bottomStyle} · Made to order · Qty ${qty}`
-        : `${color} · ${bottomStyle} · Size ${size} · Qty ${qty}`,
+        : hasSizes
+          ? `${color} · ${bottomStyle} · Size ${size} · Qty ${qty}`
+          : `${color} · ${bottomStyle} · Qty ${qty}`,
     });
   };
 
@@ -246,7 +251,8 @@ export function ProductPurchase({ product }: { product: Product }) {
           </div>
         </div>
 
-        {/* Size */}
+        {/* Size — omitted for one-size products (no sizes set in admin) */}
+        {hasSizes && (
         <div id="size-selector" className="mt-7">
           <div className="mb-2.5 flex items-center justify-between">
             <span className="text-sm font-medium">
@@ -304,6 +310,7 @@ export function ProductPurchase({ product }: { product: Product }) {
             />
           )}
         </div>
+        )}
 
         {/* Quantity + actions */}
         <div ref={addBtnRef} className="mt-7 flex flex-col gap-3">

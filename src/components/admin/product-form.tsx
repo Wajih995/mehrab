@@ -171,7 +171,6 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     if (!name.trim()) return toast.error("Product name is required");
     if (!price || Number(price) <= 0) return toast.error("Enter a valid price");
     if (images.length === 0) return toast.error("Add at least one image");
-    if (sizes.length === 0) return toast.error("Select at least one size");
 
     const payload: Product = {
       id: product?.id ?? `p-${slugify(name)}-${Date.now().toString(36)}`,

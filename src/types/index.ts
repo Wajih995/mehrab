@@ -32,6 +32,9 @@ export type SizeCode = "XS" | "S" | "M" | "L" | "XL" | "XXL" | "3XL";
 /** Sentinel size for made-to-order pieces cut to the customer's numbers. */
 export const CUSTOM_SIZE = "Custom";
 
+/** Recorded for products saved with no sizes — sold as a single size. */
+export const ONE_SIZE = "One Size";
+
 /** The bottom garment a kameez is paired with. */
 export const BOTTOM_STYLES = ["Shalwar", "Pajama"] as const;
 export type BottomStyle = (typeof BOTTOM_STYLES)[number];
