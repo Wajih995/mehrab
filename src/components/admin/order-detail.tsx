@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
 import { WhatsAppButton } from "@/components/admin/whatsapp-button";
+import { DeleteOrderButton } from "@/components/admin/delete-order-button";
 import { updateOrderStatus } from "@/actions/orders";
 import {
   ORDER_STATUSES,
@@ -77,6 +78,7 @@ export function OrderDetail({ order }: { order: OrderRecord }) {
               <Printer className="size-4" /> Generate bill
             </Link>
           </Button>
+          <DeleteOrderButton order={order} redirectTo="/admin/orders" />
           <Select
             value={order.status}
             disabled={pending}

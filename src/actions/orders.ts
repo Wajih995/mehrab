@@ -10,7 +10,7 @@ import { computeTotals, validateCoupon, type OrderTotals } from "@/lib/checkout"
 import { deliveryFeeFor } from "@/lib/delivery";
 import { getDeliverySettings } from "@/lib/repositories/delivery";
 import { placeOrderSchema, type PlaceOrderInput } from "@/lib/validations/checkout";
-import { addOrder, setOrderStatus } from "@/lib/server-orders";
+import { addOrder, removeOrder, setOrderStatus } from "@/lib/server-orders";
 import { ORDER_STATUSES, type OrderRecord, type OrderStatus } from "@/lib/orders-shared";
 import { sendOrderNotifications } from "@/lib/notifications/order-confirmation";
 
@@ -150,6 +150,29 @@ export async function placeOrder(
 export interface OrderStatusResult {
   ok: boolean;
   error?: string;
+}
+
+/**
+ * Permanently delete an order (admin). Line items cascade via the schema's
+ * onDelete: Cascade. Irreversible — the UI confirms before calling this.
+ */
+export async function deleteOrder(
+  orderNumber: string
+): Promise<OrderStatusResult> {
+  try {
+    if (!isDbConfigured) {
+      if (!removeOrder(orderNumber)) {
+        return { ok: false, error: "Order not found." };
+      }
+    } else {
+      await prisma.order.delete({ where: { orderNumber } });
+    }
+    revalidateOrders();
+    return { ok: true };
+  } catch (err) {
+    console.error("deleteOrder failed", err);
+    return { ok: false, error: "Could not delete the order." };
+  }
 }
 
 /** Update an order's fulfilment status (admin). */

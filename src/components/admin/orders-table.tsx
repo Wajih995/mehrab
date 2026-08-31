@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
 import { WhatsAppButton } from "@/components/admin/whatsapp-button";
+import { DeleteOrderButton } from "@/components/admin/delete-order-button";
 import {
   Select,
   SelectContent,
@@ -77,6 +78,7 @@ export function OrdersTable({ orders }: { orders: OrderRecord[] }) {
                   <th className="px-5 py-3 text-right font-medium">Total</th>
                   <th className="px-5 py-3 text-right font-medium">Notify</th>
                   <th className="px-5 py-3 text-right font-medium">Bill</th>
+                  <th className="px-5 py-3 text-right font-medium sr-only">Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -140,12 +142,15 @@ export function OrdersTable({ orders }: { orders: OrderRecord[] }) {
                         </Link>
                       </Button>
                     </td>
+                    <td className="px-5 py-3.5 text-right">
+                      <DeleteOrderButton order={o} iconOnly />
+                    </td>
                   </tr>
                 ))}
                 {filtered.length === 0 && (
                   <tr>
                     <td
-                      colSpan={9}
+                      colSpan={10}
                       className="px-5 py-10 text-center text-muted-foreground"
                     >
                       No orders match that search.

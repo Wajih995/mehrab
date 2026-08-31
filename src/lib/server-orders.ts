@@ -41,6 +41,16 @@ export function addOrder(order: OrderRecord): void {
   persist();
 }
 
+export function removeOrder(orderNumber: string): boolean {
+  const before = ensure().length;
+  globalForOrders.__mehrabOrders = ensure().filter(
+    (o) => o.orderNumber !== orderNumber
+  );
+  const removed = globalForOrders.__mehrabOrders.length < before;
+  if (removed) persist();
+  return removed;
+}
+
 export function setOrderStatus(
   orderNumber: string,
   status: OrderStatus
