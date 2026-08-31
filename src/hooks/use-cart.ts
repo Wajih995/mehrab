@@ -11,13 +11,9 @@ interface CartState {
   /** Coupon code applied at cart level (validated server-side later). */
   coupon: string | null;
   addItem: (item: CartItem) => void;
-  removeItem: (productId: string, size: string, color: string) => void;
-  updateQuantity: (
-    productId: string,
-    size: string,
-    color: string,
-    quantity: number
-  ) => void;
+  /** Both take a `cartLineKey(item)` — see the note on that helper. */
+  removeItem: (lineKey: string) => void;
+  updateQuantity: (lineKey: string, quantity: number) => void;
   clear: () => void;
   setCoupon: (code: string | null) => void;
   openCart: () => void;
@@ -35,20 +31,23 @@ const customKey = (item: Pick<CartItem, "custom">) =>
         .join("|")
     : "";
 
-/** Match an item by its full variant identity. */
-const sameLine = (
-  a: CartItem,
-  productId: string,
-  size: string,
-  color: string,
-  custom?: CartItem["custom"],
-  bottomStyle?: CartItem["bottomStyle"]
-) =>
-  a.productId === productId &&
-  a.size === size &&
-  a.color === color &&
-  a.bottomStyle === bottomStyle &&
-  customKey(a) === customKey({ custom });
+/**
+ * Stable identity for a cart line.
+ *
+ * Everything that makes two lines distinct on the product page belongs here:
+ * size, colour, bottom style and made-to-order measurements. Callers point at
+ * a line with this one value rather than re-listing the variant fields, so a
+ * new variant field can never leave a line unmatched (and unremovable).
+ * Also safe as a React `key`.
+ */
+export const cartLineKey = (item: CartItem) =>
+  [
+    item.productId,
+    item.size,
+    item.color,
+    item.bottomStyle ?? "",
+    customKey(item),
+  ].join("::");
 
 export const useCart = create<CartState>()(
   persist(
@@ -59,50 +58,32 @@ export const useCart = create<CartState>()(
 
       addItem: (item) =>
         set((state) => {
-          const existing = state.items.find((i) =>
-            sameLine(
-              i,
-              item.productId,
-              item.size,
-              item.color,
-              item.custom,
-              item.bottomStyle
-            )
-          );
-          if (existing) {
-            return {
-              isOpen: true,
-              items: state.items.map((i) =>
-                sameLine(
-                  i,
-                  item.productId,
-                  item.size,
-                  item.color,
-                  item.custom,
-                  item.bottomStyle
-                )
-                  ? { ...i, quantity: i.quantity + item.quantity }
-                  : i
-              ),
-            };
+          const key = cartLineKey(item);
+          if (!state.items.some((i) => cartLineKey(i) === key)) {
+            return { isOpen: true, items: [...state.items, item] };
           }
-          return { isOpen: true, items: [...state.items, item] };
+          return {
+            isOpen: true,
+            items: state.items.map((i) =>
+              cartLineKey(i) === key
+                ? { ...i, quantity: i.quantity + item.quantity }
+                : i
+            ),
+          };
         }),
 
-      removeItem: (productId, size, color) =>
+      removeItem: (lineKey) =>
         set((state) => ({
-          items: state.items.filter(
-            (i) => !sameLine(i, productId, size, color)
-          ),
+          items: state.items.filter((i) => cartLineKey(i) !== lineKey),
         })),
 
-      updateQuantity: (productId, size, color, quantity) =>
+      updateQuantity: (lineKey, quantity) =>
         set((state) => ({
           items:
             quantity <= 0
-              ? state.items.filter((i) => !sameLine(i, productId, size, color))
+              ? state.items.filter((i) => cartLineKey(i) !== lineKey)
               : state.items.map((i) =>
-                  sameLine(i, productId, size, color) ? { ...i, quantity } : i
+                  cartLineKey(i) === lineKey ? { ...i, quantity } : i
                 ),
         })),
 

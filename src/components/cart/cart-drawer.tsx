@@ -12,7 +12,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { selectSubtotal, useCart } from "@/hooks/use-cart";
+import { selectSubtotal, cartLineKey, useCart } from "@/hooks/use-cart";
 import { formatPrice } from "@/lib/utils";
 
 /** Global slide-out cart, driven by the Zustand store's `isOpen`. */
@@ -44,10 +44,7 @@ export function CartDrawer() {
 
             <ul className="flex-1 divide-y divide-border overflow-y-auto px-6">
               {items.map((item) => (
-                <li
-                  key={`${item.productId}-${item.size}-${item.color}`}
-                  className="flex gap-4 py-5"
-                >
+                <li key={cartLineKey(item)} className="flex gap-4 py-5">
                   <Link
                     href={`/products/${item.slug}`}
                     onClick={() => setOpen(false)}
@@ -83,9 +80,7 @@ export function CartDrawer() {
                         </p>
                       </div>
                       <button
-                        onClick={() =>
-                          removeItem(item.productId, item.size, item.color)
-                        }
+                        onClick={() => removeItem(cartLineKey(item))}
                         aria-label={`Remove ${item.name}`}
                         className="h-fit text-muted-foreground transition-colors hover:text-destructive"
                       >
@@ -96,14 +91,7 @@ export function CartDrawer() {
                     <div className="mt-auto flex items-center justify-between">
                       <div className="flex items-center rounded-md border border-input">
                         <button
-                          onClick={() =>
-                            updateQuantity(
-                              item.productId,
-                              item.size,
-                              item.color,
-                              item.quantity - 1
-                            )
-                          }
+                          onClick={() => updateQuantity(cartLineKey(item), item.quantity - 1)}
                           aria-label="Decrease quantity"
                           className="grid size-8 place-items-center text-muted-foreground transition-colors hover:text-foreground"
                         >
@@ -113,14 +101,7 @@ export function CartDrawer() {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() =>
-                            updateQuantity(
-                              item.productId,
-                              item.size,
-                              item.color,
-                              item.quantity + 1
-                            )
-                          }
+                          onClick={() => updateQuantity(cartLineKey(item), item.quantity + 1)}
                           aria-label="Increase quantity"
                           className="grid size-8 place-items-center text-muted-foreground transition-colors hover:text-foreground"
                         >

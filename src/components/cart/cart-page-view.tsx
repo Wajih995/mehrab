@@ -6,7 +6,7 @@ import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { OrderSummary } from "@/components/cart/order-summary";
-import { useCart } from "@/hooks/use-cart";
+import { cartLineKey, useCart } from "@/hooks/use-cart";
 import { useMounted } from "@/hooks/use-mounted";
 import { formatPrice } from "@/lib/utils";
 import { formatMeasurements } from "@/lib/data/size-chart";
@@ -50,10 +50,7 @@ export function CartPageView({
       <div>
         <ul className="divide-y divide-border border-y border-border">
           {items.map((item) => (
-            <li
-              key={`${item.productId}-${item.size}-${item.color}`}
-              className="flex gap-4 py-5 sm:gap-6"
-            >
+            <li key={cartLineKey(item)} className="flex gap-4 py-5 sm:gap-6">
               <Link
                 href={`/products/${item.slug}`}
                 className="relative aspect-[3/4] w-24 shrink-0 overflow-hidden rounded-lg bg-muted sm:w-28"
@@ -87,9 +84,7 @@ export function CartPageView({
                     </p>
                   </div>
                   <button
-                    onClick={() =>
-                      removeItem(item.productId, item.size, item.color)
-                    }
+                    onClick={() => removeItem(cartLineKey(item))}
                     aria-label={`Remove ${item.name}`}
                     className="h-fit text-muted-foreground transition-colors hover:text-destructive"
                   >
@@ -100,14 +95,7 @@ export function CartPageView({
                 <div className="mt-auto flex items-center justify-between pt-3">
                   <div className="flex items-center rounded-md border border-input">
                     <button
-                      onClick={() =>
-                        updateQuantity(
-                          item.productId,
-                          item.size,
-                          item.color,
-                          item.quantity - 1
-                        )
-                      }
+                      onClick={() => updateQuantity(cartLineKey(item), item.quantity - 1)}
                       aria-label="Decrease quantity"
                       className="grid size-9 place-items-center text-muted-foreground hover:text-foreground"
                     >
@@ -117,14 +105,7 @@ export function CartPageView({
                       {item.quantity}
                     </span>
                     <button
-                      onClick={() =>
-                        updateQuantity(
-                          item.productId,
-                          item.size,
-                          item.color,
-                          item.quantity + 1
-                        )
-                      }
+                      onClick={() => updateQuantity(cartLineKey(item), item.quantity + 1)}
                       aria-label="Increase quantity"
                       className="grid size-9 place-items-center text-muted-foreground hover:text-foreground"
                     >
