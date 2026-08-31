@@ -23,7 +23,8 @@ export const siteConfig = {
   },
   socials: {
     instagram: "https://instagram.com/mehrabessentials",
-    facebook: "https://facebook.com/mehrabessentials",
+    facebook:
+      "https://www.facebook.com/people/Mehrab-Essentials/61592870201080/",
     // tiktok: "https://tiktok.com/@mehrab",
     // youtube: "https://youtube.com/@mehrab",
   },
