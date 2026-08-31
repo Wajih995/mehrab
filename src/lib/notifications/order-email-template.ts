@@ -1,6 +1,6 @@
 import { siteConfig } from "@/lib/site";
 import { CUSTOM_FIELDS } from "@/lib/data/size-chart";
-import { toWhatsAppNumber } from "@/lib/whatsapp";
+import { whatsAppOrderLink } from "@/lib/whatsapp";
 import type { OrderRecord } from "@/lib/orders-shared";
 
 /**
@@ -158,7 +158,9 @@ export function orderAdminHtml(order: OrderRecord): string {
     })
     .join("");
 
-  const wa = toWhatsAppNumber(order.phone);
+  // Same pre-typed message the admin panel's button sends, so staff can
+  // reply straight from the alert without opening the site.
+  const waLink = whatsAppOrderLink(order);
 
   return `<!doctype html>
 <html>
@@ -210,7 +212,7 @@ export function orderAdminHtml(order: OrderRecord): string {
                style="display:inline-block;background:#26221f;color:#f7f3ea;text-decoration:none;font-size:13px;padding:12px 24px;margin:0 6px 8px;">
               OPEN IN ADMIN
             </a>
-            <a href="https://wa.me/${wa}"
+            <a href="${waLink}"
                style="display:inline-block;background:#128C7E;color:#ffffff;text-decoration:none;font-size:13px;padding:12px 24px;margin:0 6px 8px;">
               WHATSAPP CUSTOMER
             </a>
