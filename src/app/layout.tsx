@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 
+import { Analytics } from "@vercel/analytics/next";
 import { fontSans, fontSerif } from "@/lib/fonts";
 import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -64,6 +65,7 @@ export default function RootLayout({
         )}
       >
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
