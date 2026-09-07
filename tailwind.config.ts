@@ -136,6 +136,16 @@ const config: Config = {
           from: { transform: "translateX(0)" },
           to: { transform: "translateX(-50%)" },
         },
+        // Front-loaded: most navigations commit within a few hundred ms, so
+        // the bar has to be visibly under way almost immediately. It then
+        // eases toward — but never reaches — full width, reporting "still
+        // working" without ever promising it is nearly done.
+        "nav-progress": {
+          "0%": { width: "0%" },
+          "20%": { width: "45%" },
+          "55%": { width: "72%" },
+          "100%": { width: "90%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.25s ease-out",
@@ -143,6 +153,7 @@ const config: Config = {
         "fade-in": "fade-in 0.5s var(--ease-luxe, ease) forwards",
         "fade-up": "fade-up 0.6s var(--ease-luxe, ease) forwards",
         shimmer: "shimmer 1.6s infinite",
+        "nav-progress": "nav-progress 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards",
         marquee: "marquee 32s linear infinite",
       },
     },

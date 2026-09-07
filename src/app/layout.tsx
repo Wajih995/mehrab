@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 
 import { fontSans, fontSerif, fontUrdu } from "@/lib/fonts";
 import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/components/providers";
+import { NavigationProgress } from "@/components/shared/navigation-progress";
 
 import "./globals.css";
 
@@ -64,6 +66,11 @@ export default function RootLayout({
           "min-h-dvh font-sans"
         )}
       >
+        {/* Suspense keeps the useSearchParams() read inside this client
+            component from opting every static page into dynamic rendering. */}
+        <Suspense fallback={null}>
+          <NavigationProgress />
+        </Suspense>
         <Providers>{children}</Providers>
       </body>
     </html>
