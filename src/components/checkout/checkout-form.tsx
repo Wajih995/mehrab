@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Banknote, Loader2, Lock, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
@@ -61,6 +61,33 @@ export function CheckoutForm({
     defaultValues: { paymentMethod: "cod", acceptTerms: false, province: undefined },
   });
 
+  /**
+   * Submit blocked by validation. The fields highlight themselves in red, but
+   * the button sits in the sticky summary — often with the offending field
+   * scrolled out of view — so the reason is surfaced as a toast too.
+   */
+  const onInvalid = (formErrors: FieldErrors<CheckoutInput>) => {
+    const messages = Object.values(formErrors)
+      .map((e) => e?.message)
+      .filter((m): m is string => typeof m === "string");
+    const first = messages[0] ?? "Please complete the required fields";
+    toast.error(
+      messages.length > 1
+        ? `${first} (and ${messages.length - 1} more ${
+            messages.length === 2 ? "field" : "fields"
+          } to fix)`
+        : first,
+      { description: "The fields that need attention are marked in red." }
+    );
+    // Radix's Select is not focusable by react-hook-form, so nudge it manually
+    // when the province is the only thing missing.
+    if (formErrors.province && Object.keys(formErrors).length === 1) {
+      document
+        .querySelector<HTMLElement>('[data-province-trigger="true"]')
+        ?.focus();
+    }
+  };
+
   const onSubmit = async (values: CheckoutInput) => {
     const result = await placeOrder({
       customer: { ...values, couponCode: couponCode ?? undefined },
@@ -118,7 +145,7 @@ export function CheckoutForm({
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit, onInvalid)}
       className="grid gap-10 lg:grid-cols-[1fr_400px] lg:gap-14"
       noValidate
     >
@@ -135,11 +162,11 @@ export function CheckoutForm({
             </Link>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Email" error={errors.email?.message} className="sm:col-span-2">
-              <Input type="email" autoComplete="email" placeholder="you@email.com" {...register("email")} />
+            <Field label="Email" required error={errors.email?.message} className="sm:col-span-2">
+              <Input type="email" autoComplete="email" placeholder="you@email.com" aria-required="true" aria-invalid={Boolean(errors.email)} {...register("email")} />
             </Field>
-            <Field label="Phone" error={errors.phone?.message} className="sm:col-span-2">
-              <Input type="tel" autoComplete="tel" placeholder="03XX XXXXXXX" {...register("phone")} />
+            <Field label="Phone" required error={errors.phone?.message} className="sm:col-span-2">
+              <Input type="tel" autoComplete="tel" placeholder="03XX XXXXXXX" aria-required="true" aria-invalid={Boolean(errors.phone)} {...register("phone")} />
             </Field>
           </div>
         </section>
@@ -147,25 +174,34 @@ export function CheckoutForm({
         <section>
           <h2 className="mb-5 font-serif text-xl">Delivery address</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="First name" error={errors.firstName?.message}>
-              <Input autoComplete="given-name" {...register("firstName")} />
+            <Field label="First name" required error={errors.firstName?.message}>
+              <Input autoComplete="given-name" aria-required="true" aria-invalid={Boolean(errors.firstName)} {...register("firstName")} />
             </Field>
-            <Field label="Last name" error={errors.lastName?.message}>
-              <Input autoComplete="family-name" {...register("lastName")} />
+            <Field label="Last name" required error={errors.lastName?.message}>
+              <Input autoComplete="family-name" aria-required="true" aria-invalid={Boolean(errors.lastName)} {...register("lastName")} />
             </Field>
-            <Field label="Street address" error={errors.address?.message} className="sm:col-span-2">
-              <Input autoComplete="street-address" placeholder="House / flat, street, area" {...register("address")} />
+            <Field label="Street address" required error={errors.address?.message} className="sm:col-span-2">
+              <Input autoComplete="street-address" placeholder="House / flat, street, area" aria-required="true" aria-invalid={Boolean(errors.address)} {...register("address")} />
             </Field>
-            <Field label="City" error={errors.city?.message}>
-              <Input autoComplete="address-level2" {...register("city")} />
+            <Field label="City" required error={errors.city?.message}>
+              <Input autoComplete="address-level2" aria-required="true" aria-invalid={Boolean(errors.city)} {...register("city")} />
             </Field>
-            <Field label="Province" error={errors.province?.message}>
+            <Field label="Province" required error={errors.province?.message}>
               <Controller
                 control={control}
                 name="province"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger
+                      data-province-trigger="true"
+                      aria-required="true"
+                      aria-invalid={Boolean(errors.province)}
+                      className={cn(
+                        "w-full",
+                        errors.province &&
+                          "border-destructive bg-destructive/[0.03]"
+                      )}
+                    >
                       <SelectValue placeholder="Select province" />
                     </SelectTrigger>
                     <SelectContent>
@@ -180,7 +216,7 @@ export function CheckoutForm({
               />
             </Field>
             <Field label="Postal code (optional)" error={errors.postalCode?.message}>
-              <Input inputMode="numeric" autoComplete="postal-code" placeholder="54000" {...register("postalCode")} />
+              <Input inputMode="numeric" autoComplete="postal-code" placeholder="54000" aria-invalid={Boolean(errors.postalCode)} {...register("postalCode")} />
             </Field>
             <Field label="Order notes (optional)" className="sm:col-span-2">
               <textarea
@@ -228,7 +264,10 @@ export function CheckoutForm({
                   checked={field.value}
                   onCheckedChange={(v) => field.onChange(v === true)}
                   aria-invalid={Boolean(errors.acceptTerms)}
-                  className="mt-0.5"
+                  className={cn(
+                    "mt-0.5",
+                    errors.acceptTerms && "border-destructive"
+                  )}
                 />
                 <span className="leading-relaxed text-muted-foreground">
                   I have read and accept the{" "}
@@ -253,7 +292,7 @@ export function CheckoutForm({
                 </span>
               </label>
               {errors.acceptTerms && (
-                <p className="mt-1.5 text-xs text-destructive">
+                <p role="alert" className="mt-1.5 text-xs text-destructive">
                   {errors.acceptTerms.message}
                 </p>
               )}
@@ -294,19 +333,41 @@ export function CheckoutForm({
 function Field({
   label,
   error,
+  required,
   children,
   className,
 }: {
   label: string;
   error?: string;
+  /** Marks the label with an asterisk and announces the field as required. */
+  required?: boolean;
   children: React.ReactNode;
   className?: string;
 }) {
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
+      <Label
+        className={cn(
+          "text-xs font-medium",
+          error ? "text-destructive" : "text-muted-foreground"
+        )}
+      >
+        {label}
+        {required && (
+          <>
+            <span aria-hidden className="ml-0.5 text-destructive">
+              *
+            </span>
+            <span className="sr-only"> (required)</span>
+          </>
+        )}
+      </Label>
       {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && (
+        <p role="alert" className="text-xs text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

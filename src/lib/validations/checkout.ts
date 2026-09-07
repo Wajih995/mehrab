@@ -14,15 +14,23 @@ export const PROVINCES = [
 ] as const;
 
 export const checkoutSchema = z.object({
-  email: z.string().email("Enter a valid email address"),
-  firstName: z.string().min(2, "Required"),
-  lastName: z.string().min(2, "Required"),
+  // Every message names its own field: they surface in a toast on a failed
+  // submit, where a bare "Required" would say nothing useful.
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email address is required")
+    .email("Enter a valid email address"),
+  firstName: z.string().trim().min(2, "First name is required"),
+  lastName: z.string().trim().min(2, "Last name is required"),
   phone: z
     .string()
+    .trim()
+    .min(1, "Phone number is required")
     .transform((v) => v.replace(/[\s-]/g, ""))
-    .pipe(z.string().regex(phoneRegex, "Enter a valid Pakistani mobile number")),
-  address: z.string().min(6, "Enter your full street address"),
-  city: z.string().min(2, "Required"),
+    .pipe(z.string().regex(phoneRegex, "Enter a valid mobile number, e.g. 03001234567")),
+  address: z.string().trim().min(6, "Street address is required"),
+  city: z.string().trim().min(2, "City is required"),
   province: z.enum(PROVINCES, { message: "Select a province" }),
   postalCode: z
     .string()
