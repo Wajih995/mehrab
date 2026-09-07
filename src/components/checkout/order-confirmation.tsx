@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   Check,
   CircleX,
+  ClipboardCheck,
   Package,
   PackageCheck,
   Truck,
@@ -15,6 +16,7 @@ import type { OrderRecord, OrderStatus } from "@/lib/orders-shared";
 
 /** Timeline steps in fulfilment order (Cancelled is rendered separately). */
 const STEPS: { status: OrderStatus; label: string; icon: typeof Check }[] = [
+  { status: "Received", label: "Received", icon: ClipboardCheck },
   { status: "Confirmed", label: "Confirmed", icon: Check },
   { status: "Packed", label: "Packed", icon: Package },
   { status: "Shipped", label: "On the way", icon: Truck },
@@ -22,6 +24,7 @@ const STEPS: { status: OrderStatus; label: string; icon: typeof Check }[] = [
 ];
 
 const HEADLINE: Record<OrderStatus, (name: string) => string> = {
+  Received: (n) => `Order received, ${n}`,
   Confirmed: (n) => `Thank you, ${n}`,
   Packed: (n) => `Almost ready, ${n}`,
   Shipped: (n) => `It's on the way, ${n}`,
@@ -30,6 +33,8 @@ const HEADLINE: Record<OrderStatus, (name: string) => string> = {
 };
 
 const STATUS_LINE: Record<OrderStatus, string> = {
+  Received:
+    "has been received. Our team will call you shortly to confirm it.",
   Confirmed: "is confirmed and our atelier is preparing it.",
   Packed: "is packed and ready to leave our atelier.",
   Shipped: "is with the courier — please keep the amount ready.",

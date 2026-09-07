@@ -83,6 +83,7 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         serif: ["var(--font-serif)", "Georgia", "serif"],
+        urdu: ["var(--font-urdu)", "Noto Naskh Arabic", "serif"],
       },
       fontSize: {
         "2xs": ["0.6875rem", { lineHeight: "1rem", letterSpacing: "0.08em" }],

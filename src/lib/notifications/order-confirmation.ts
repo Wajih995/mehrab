@@ -4,8 +4,8 @@ import { sendEmail } from "@/lib/notifications/email";
 import {
   orderAdminHtml,
   orderAdminSubject,
-  orderConfirmationHtml,
-  orderConfirmationSubject,
+  orderReceivedHtml,
+  orderReceivedSubject,
 } from "@/lib/notifications/order-email-template";
 import { siteConfig } from "@/lib/site";
 import type { OrderRecord } from "@/lib/orders-shared";
@@ -15,7 +15,7 @@ const NOTIFY_TO =
   process.env.ORDER_NOTIFY_EMAIL || siteConfig.contact.email;
 
 /**
- * Send both order emails — the customer's confirmation and the merchant's
+ * Send both order emails — the customer's "order received" note and the merchant's
  * new-order alert. Sent independently: one failing never blocks the other,
  * and neither can fail the order that was already placed.
  */
@@ -25,8 +25,8 @@ export async function sendOrderNotifications(
   const results = await Promise.allSettled([
     sendEmail({
       to: order.email,
-      subject: orderConfirmationSubject(order),
-      html: orderConfirmationHtml(order),
+      subject: orderReceivedSubject(order),
+      html: orderReceivedHtml(order),
     }),
     sendEmail({
       to: NOTIFY_TO,
@@ -39,7 +39,7 @@ export async function sendOrderNotifications(
   results.forEach((r, i) => {
     if (r.status === "rejected") {
       console.error(
-        `[email] ${i === 0 ? "confirmation" : "admin alert"} for ${order.orderNumber} failed`,
+        `[email] ${i === 0 ? "order received" : "admin alert"} for ${order.orderNumber} failed`,
         r.reason
       );
     }

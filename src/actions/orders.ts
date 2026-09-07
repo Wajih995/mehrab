@@ -77,7 +77,7 @@ export async function placeOrder(
   const record: OrderRecord = {
     orderNumber,
     placedAt,
-    status: "Confirmed",
+    status: "Received",
     paymentMethod: "cod",
     email: customer.email,
     fullName: `${customer.firstName} ${customer.lastName}`,
@@ -97,7 +97,7 @@ export async function placeOrder(
     await prisma.order.create({
       data: {
         orderNumber,
-        status: "CONFIRMED",
+        status: "RECEIVED",
         paymentMethod: "COD",
         email: customer.email,
         fullName: `${customer.firstName} ${customer.lastName}`,

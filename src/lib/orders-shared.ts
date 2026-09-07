@@ -8,6 +8,7 @@ import type { OrderTotals } from "@/lib/checkout";
  */
 
 export const ORDER_STATUSES = [
+  "Received",
   "Confirmed",
   "Packed",
   "Shipped",

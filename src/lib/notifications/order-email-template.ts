@@ -16,11 +16,11 @@ import type { OrderRecord } from "@/lib/orders-shared";
 
 const rs = (n: number) => `Rs ${n.toLocaleString("en-PK")}`;
 
-export function orderConfirmationSubject(order: OrderRecord): string {
-  return `Order confirmed — ${order.orderNumber} · MEHRAB`;
+export function orderReceivedSubject(order: OrderRecord): string {
+  return `Order received — ${order.orderNumber} · MEHRAB`;
 }
 
-export function orderConfirmationHtml(order: OrderRecord): string {
+export function orderReceivedHtml(order: OrderRecord): string {
   const rows = order.items
     .map(
       (i) => `
@@ -58,10 +58,11 @@ export function orderConfirmationHtml(order: OrderRecord): string {
         <!-- Body -->
         <tr>
           <td style="padding:32px 32px 8px;">
-            <p style="margin:0;color:#a8823f;font-size:11px;letter-spacing:2px;">ORDER CONFIRMED</p>
+            <p style="margin:0;color:#a8823f;font-size:11px;letter-spacing:2px;">ORDER RECEIVED</p>
             <h1 style="margin:8px 0 0;color:#26221f;font-size:24px;font-weight:normal;">Shukriya, ${order.fullName.split(" ")[0]}.</h1>
             <p style="margin:12px 0 0;color:#8a8378;font-size:14px;line-height:1.6;">
-              Your order <strong style="color:#26221f;">${order.orderNumber}</strong> is confirmed and our atelier is preparing it.
+              We have received your order <strong style="color:#26221f;">${order.orderNumber}</strong>. Our team will call you shortly on
+              <strong style="color:#26221f;">${order.phone}</strong> to confirm it — once confirmed, our atelier begins preparing it.
               Payment is <strong style="color:#26221f;">cash on delivery</strong> — please keep <strong style="color:#26221f;">${rs(order.totals.total)}</strong> ready.
             </p>
           </td>

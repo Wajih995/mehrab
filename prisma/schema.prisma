@@ -171,6 +171,7 @@ model WishlistItem {
 
 // ─── Orders ─────────────────────────────────────────────────
 enum OrderStatus {
+  RECEIVED
   CONFIRMED
   PACKED
   SHIPPED
@@ -187,7 +188,7 @@ model Order {
   id            String        @id @default(cuid())
   orderNumber   String        @unique
   userId        String?
-  status        OrderStatus   @default(CONFIRMED)
+  status        OrderStatus   @default(RECEIVED)
   paymentMethod PaymentMethod @default(COD)
 
   email     String

@@ -17,6 +17,7 @@ import {
 } from "@/components/product/custom-size-fields";
 import { SizeGuideDialog } from "@/components/product/size-guide-dialog";
 import { CUSTOM_FIELDS, MEASUREMENT_LIMITS } from "@/lib/data/size-chart";
+import { isUnstitched } from "@/lib/product-kind";
 import {
   BOTTOM_STYLES,
   CUSTOM_SIZE,
@@ -52,6 +53,8 @@ export function ProductPurchase({
   const isCustom = size === CUSTOM_SIZE;
   // Products saved without sizes are one-size: no selector, no gate.
   const hasSizes = product.sizes.length > 0;
+  // Unstitched is fabric by the suit — there is no made-up bottom to choose.
+  const unstitched = isUnstitched(product);
 
   const setMeasurement = (key: keyof CustomMeasurements, value: string) => {
     setDraft((d) => ({ ...d, [key]: value }));
@@ -125,15 +128,18 @@ export function ProductPurchase({
       size: (hasSizes ? size : ONE_SIZE) as never,
       color,
       quantity: qty,
-      bottomStyle,
+      bottomStyle: unstitched ? undefined : bottomStyle,
       custom,
     });
     toast.success(`${product.name} added to your bag`, {
-      description: isCustom
-        ? `${color} · ${bottomStyle} · Made to order · Qty ${qty}`
-        : hasSizes
-          ? `${color} · ${bottomStyle} · Size ${size} · Qty ${qty}`
-          : `${color} · ${bottomStyle} · Qty ${qty}`,
+      description: [
+        color,
+        unstitched ? null : bottomStyle,
+        isCustom ? "Made to order" : hasSizes ? `Size ${size}` : null,
+        `Qty ${qty}`,
+      ]
+        .filter(Boolean)
+        .join(" · "),
     });
   };
 
@@ -241,7 +247,8 @@ export function ProductPurchase({
           </div>
         )}
 
-        {/* Bottom garment */}
+        {/* Bottom garment — not offered on unstitched fabric */}
+        {!unstitched && (
         <div className="mt-7">
           <div className="mb-2.5 flex items-center gap-2 text-sm">
             <span className="font-medium">Bottom</span>
@@ -265,6 +272,7 @@ export function ProductPurchase({
             ))}
           </div>
         </div>
+        )}
 
         {/* Size — omitted for one-size products (no sizes set in admin) */}
         {hasSizes && (

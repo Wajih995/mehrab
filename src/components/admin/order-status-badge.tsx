@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import type { OrderStatus } from "@/lib/orders-shared";
 
 const STYLES: Record<OrderStatus, string> = {
+  Received: "bg-sand-300/40 text-charcoal-700 dark:bg-sand-300/20 dark:text-sand-100",
   Confirmed: "bg-blue-500/12 text-blue-700 dark:text-blue-300",
   Packed: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
   Shipped: "bg-violet-500/12 text-violet-700 dark:text-violet-300",

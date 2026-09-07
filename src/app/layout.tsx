@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 
-import { fontSans, fontSerif } from "@/lib/fonts";
+import { fontSans, fontSerif, fontUrdu } from "@/lib/fonts";
 import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/components/providers";
@@ -60,6 +60,7 @@ export default function RootLayout({
         className={cn(
           fontSans.variable,
           fontSerif.variable,
+          fontUrdu.variable,
           "min-h-dvh font-sans"
         )}
       >

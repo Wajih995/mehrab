@@ -48,7 +48,7 @@ function itemLines(order: OrderRecord): string {
 }
 
 const DELIVERY_ETA: Record<string, string> = {
-  Karachi: "1–2 working days",
+  Karachi: "4–5 working days",
   Lahore: "2–3 working days",
   Islamabad: "2–3 working days",
   Rawalpindi: "2–3 working days",
@@ -73,6 +73,24 @@ export function whatsAppOrderMessage(order: OrderRecord): string {
   const cod = `${rs(order.totals.total)} (Cash on Delivery)`;
 
   const byStatus: Record<OrderStatus, string> = {
+    Received: `${greeting}
+
+We have received your MEHRAB order — shukriya!
+
+*Order:* ${order.orderNumber}
+${itemLines(order)}
+
+*Total:* ${cod}
+*Delivery:* ${eta(order.city)} to ${order.city}
+
+Our team will call you shortly on this number to *confirm the order*. Once confirmed, we begin preparing it at our Karachi atelier.
+
+If anything needs changing — size, colour or address — just reply here.
+
+${track}
+
+${sign}`,
+
     Confirmed: `${greeting}
 
 Your MEHRAB order is confirmed.

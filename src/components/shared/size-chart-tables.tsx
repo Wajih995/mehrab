@@ -92,7 +92,7 @@ export function SizeChartTables({ compact = false }: { compact?: boolean }) {
     <>
       <MeasurementTable title="Kameez" rows={KAMEEZ_ROWS} compact={compact} />
       <MeasurementTable
-        title="Shalwar"
+        title="Shalwar / Pajama"
         rows={SHALWAR_ROWS}
         compact={compact}
         className={compact ? "mt-5" : "mt-10"}
