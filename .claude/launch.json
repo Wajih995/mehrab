@@ -7,6 +7,12 @@
       "runtimeArgs": ["dev", "--port", "3100"],
       "port": 3100,
       "autoPort": true
+    },
+    {
+      "name": "prod",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["start", "--port", "3200"],
+      "port": 3200
     }
   ]
 }

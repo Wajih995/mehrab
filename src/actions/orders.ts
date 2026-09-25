@@ -35,7 +35,7 @@ function generateOrderNumber(): string {
 function revalidateOrders() {
   revalidatePath("/admin");
   revalidatePath("/admin/orders");
-  revalidatePath("/admin/orders/[orderNumber]", "page");
+  revalidatePath("/(admin)/admin/orders/[orderNumber]", "page");
 }
 
 /**

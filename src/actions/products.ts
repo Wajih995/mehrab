@@ -22,8 +22,8 @@ function revalidateStore() {
   revalidatePath("/");
   revalidatePath("/shop");
   revalidatePath("/collections");
-  revalidatePath("/collections/[slug]", "page");
-  revalidatePath("/products/[slug]", "page");
+  revalidatePath("/(storefront)/collections/[slug]", "page");
+  revalidatePath("/(storefront)/products/[slug]", "page");
   revalidatePath("/admin/products");
 }
 

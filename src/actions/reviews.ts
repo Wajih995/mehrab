@@ -5,8 +5,10 @@ import { z } from "zod";
 
 import { prisma } from "@/lib/db";
 import { isDbConfigured } from "@/lib/env";
+import { getProductById } from "@/lib/repositories/products";
 import {
   addReview,
+  readReviews,
   removeReview,
   setReviewApproved,
 } from "@/lib/server-reviews";
@@ -32,6 +34,26 @@ const reviewSchema = z.object({
 });
 
 export type SubmitReviewInput = z.infer<typeof reviewSchema>;
+
+/**
+ * Drop the cached product page(s) so a moderation change shows up on the
+ * storefront immediately.
+ *
+ * Product pages are statically prerendered, so they only change when their
+ * cache entry is invalidated. The pattern form MUST include the `(storefront)`
+ * route group — `revalidatePath("/products/[slug]", "page")` silently matches
+ * nothing. The literal URL is revalidated too when the product is known.
+ */
+async function revalidateProductPage(productId?: string): Promise<void> {
+  revalidatePath("/(storefront)/products/[slug]", "page");
+  if (!productId) return;
+  try {
+    const product = await getProductById(productId);
+    if (product) revalidatePath(`/products/${product.slug}`);
+  } catch (err) {
+    console.error("revalidateProductPage: product lookup failed", err);
+  }
+}
 
 /**
  * Accept a customer review.
@@ -100,15 +122,22 @@ export async function setReviewVisibility(
   approved: boolean
 ): Promise<ReviewActionResult> {
   try {
+    let productId: string | undefined;
     if (!isDbConfigured) {
+      productId = readReviews().find((r) => r.id === id)?.productId;
       if (!setReviewApproved(id, approved)) {
         return { ok: false, error: "Review not found." };
       }
     } else {
-      await prisma.review.update({ where: { id }, data: { approved } });
+      const row = await prisma.review.update({
+        where: { id },
+        data: { approved },
+        select: { productId: true },
+      });
+      productId = row.productId;
     }
     revalidatePath("/admin/reviews");
-    revalidatePath("/products/[slug]", "page");
+    await revalidateProductPage(productId);
     return { ok: true };
   } catch (err) {
     console.error("setReviewVisibility failed", err);
@@ -119,15 +148,21 @@ export async function setReviewVisibility(
 /** Permanently delete a review (admin). */
 export async function deleteReview(id: string): Promise<ReviewActionResult> {
   try {
+    let productId: string | undefined;
     if (!isDbConfigured) {
+      productId = readReviews().find((r) => r.id === id)?.productId;
       if (!removeReview(id)) {
         return { ok: false, error: "Review not found." };
       }
     } else {
-      await prisma.review.delete({ where: { id } });
+      const row = await prisma.review.delete({
+        where: { id },
+        select: { productId: true },
+      });
+      productId = row.productId;
     }
     revalidatePath("/admin/reviews");
-    revalidatePath("/products/[slug]", "page");
+    await revalidateProductPage(productId);
     return { ok: true };
   } catch (err) {
     console.error("deleteReview failed", err);
