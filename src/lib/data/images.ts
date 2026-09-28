@@ -47,4 +47,6 @@ export const brand = {
   heroBanner: "/brand/main-banner.jpeg",
   /** 16:9 banner — six-colour kameez lineup with the logo & Urdu tagline baked in. */
   lineupBanner: "/brand/banner-2.jpeg",
+  /** 16:9 banner — Riwayat-e-Baaft collection: navy & white kameez with fabric swatches. */
+  riwayatBanner: "/brand/banner-3.jpeg",
 } as const;

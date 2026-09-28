@@ -21,6 +21,12 @@ type Slide = {
 
 const slides: Slide[] = [
   {
+    id: "riwayat",
+    src: brand.riwayatBanner,
+    alt: "MEHRAB new collection Riwayat-e-Baaft — navy blue and white textured kameez shalwar with fabric swatches",
+    imageClassName: "object-cover object-center",
+  },
+  {
     id: "lineup",
     src: brand.lineupBanner,
     alt: "MEHRAB Essentials — six kameez shalwar in white, grey, green, brown, navy and black on mannequins",
