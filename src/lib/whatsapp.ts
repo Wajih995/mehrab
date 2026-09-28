@@ -131,15 +131,15 @@ ${track}
 
 ${sign}`,
 
-    Delivered: `${greeting}
+    Delivered: `Assalam-o-Alaikum ${firstName},
 
-Your MEHRAB order *${order.orderNumber}* has been delivered — we hope the fit is perfect.
+Your MEHRAB order *${order.orderNumber}* has been delivered. We hope you’re pleased with the fit and quality.
 
-Free size exchange is available within 7 days, just reply here.
+If you need a different size, simply reply to this message to request a free size exchange within 7 days.
 
-If you loved it, a review would mean a great deal to our karigars.
+If you have a moment, we’d love to hear your feedback. Your review would mean a lot to us.
 
-${sign}`,
+Thank you for choosing MEHRAB.`,
 
     Cancelled: `${greeting}
 
