@@ -89,7 +89,14 @@ export function NavigationProgress() {
   // Navigation committed — run the bar out, but not before it has been on
   // screen long enough to notice.
   const firstRender = useRef(true);
+  // Location of the page currently on screen, to tell real popstate
+  // navigations apart from hash-only ones.
+  const committed = useRef({ pathname: "", search: "" });
   useEffect(() => {
+    committed.current = {
+      pathname: window.location.pathname,
+      search: window.location.search,
+    };
     if (firstRender.current) {
       firstRender.current = false;
       return;
@@ -115,12 +122,22 @@ export function NavigationProgress() {
       const anchor = (e.target as HTMLElement | null)?.closest("a");
       if (anchor && navigatesInThisTab(anchor as HTMLAnchorElement)) begin();
     };
+    // Browsers also fire popstate for same-page hash jumps (e.g. `#new-arrivals`),
+    // where pathname/search never change and the loader would never settle.
+    const onPopState = () => {
+      if (
+        window.location.pathname !== committed.current.pathname ||
+        window.location.search !== committed.current.search
+      ) {
+        begin();
+      }
+    };
     // Capture phase: React's own handlers may stop propagation.
     document.addEventListener("click", onClick, true);
-    window.addEventListener("popstate", begin);
+    window.addEventListener("popstate", onPopState);
     return () => {
       document.removeEventListener("click", onClick, true);
-      window.removeEventListener("popstate", begin);
+      window.removeEventListener("popstate", onPopState);
       clearTimers();
     };
   }, [begin, clearTimers]);

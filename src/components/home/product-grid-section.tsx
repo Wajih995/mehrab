@@ -18,6 +18,8 @@ interface ProductGridSectionProps {
   viewAllHref: string;
   viewAllLabel?: string;
   muted?: boolean;
+  /** Anchor id so other sections can link here (e.g. the hero CTA). */
+  id?: string;
 }
 
 /** How many cards a homepage row shows before deferring to the full page. */
@@ -39,12 +41,13 @@ export function ProductGridSection({
   viewAllHref,
   viewAllLabel = "View All",
   muted,
+  id,
 }: ProductGridSectionProps) {
   const shown = products.slice(0, CARDS);
   if (shown.length === 0) return null;
 
   return (
-    <section className={cn("section", muted && "bg-secondary/40")}>
+    <section id={id} className={cn("section", muted && "bg-secondary/40")}>
       <div className="container">
         <SectionHeading
           eyebrow={eyebrow}

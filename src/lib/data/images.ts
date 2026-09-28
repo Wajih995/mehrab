@@ -45,4 +45,6 @@ export function img(key: KameezImageKey): string {
 export const brand = {
   /** ULTRA-WIDE (~2.4:1) brand banner — logo lockup, atelier rail, folded fabrics. */
   heroBanner: "/brand/main-banner.jpeg",
+  /** 16:9 banner — six-colour kameez lineup with the logo & Urdu tagline baked in. */
+  lineupBanner: "/brand/banner-2.jpeg",
 } as const;

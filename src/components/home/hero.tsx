@@ -1,72 +1,147 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/data/images";
 import { easeLuxe } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
-/** Fullscreen editorial hero — the brand's first impression. */
+const AUTOPLAY_MS = 7000;
+
+type Slide = {
+  id: string;
+  src: string;
+  alt: string;
+  imageClassName: string;
+};
+
+const slides: Slide[] = [
+  {
+    id: "lineup",
+    src: brand.lineupBanner,
+    alt: "MEHRAB Essentials — six kameez shalwar in white, grey, green, brown, navy and black on mannequins",
+    imageClassName: "object-cover object-center",
+  },
+  {
+    id: "atelier",
+    src: brand.heroBanner,
+    alt: "MEHRAB — Elevate Tradition: kameez on an atelier rail beside folded fabrics",
+    imageClassName: "object-cover object-[center_30%]",
+  },
+];
+
+/** Fullscreen hero carousel — the brand's first impression. */
 export function Hero() {
-  return (
-    <section className="relative h-[88vh] min-h-[560px] w-full overflow-hidden bg-charcoal-950 text-sand-50">
-      <Image
-        src={brand.heroBanner}
-        alt="MEHRAB — Elevate Tradition: kameez on an atelier rail beside folded fabrics"
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover object-[center_30%] opacity-95"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-charcoal-950 via-charcoal-950/40 to-charcoal-950/20" />
-      <div className="absolute inset-0 bg-gradient-to-r from-charcoal-950/60 to-transparent" />
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
 
-      <div className="container relative flex h-full flex-col justify-end pb-16 md:justify-center md:pb-0">
+  const go = useCallback(
+    (delta: number) => setIndex((i) => (i + delta + slides.length) % slides.length),
+    [],
+  );
+
+  useEffect(() => {
+    if (paused) return;
+    const id = setTimeout(() => go(1), AUTOPLAY_MS);
+    return () => clearTimeout(id);
+  }, [index, paused, go]);
+
+  const slide = slides[index];
+
+  return (
+    <section
+      aria-roledescription="carousel"
+      aria-label="Featured collections"
+      className="relative h-[88vh] min-h-[560px] w-full overflow-hidden bg-charcoal-950 text-sand-50"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* The banners carry their own typography; keep a heading for SEO & screen readers. */}
+      <h1 className="sr-only">MEHRAB — Elevate Tradition. Eastern menswear, handmade in Pakistan.</h1>
+
+      <AnimatePresence initial={false}>
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
+          key={slide.id}
+          role="group"
+          aria-roledescription="slide"
+          aria-label={`${index + 1} of ${slides.length}`}
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           transition={{ duration: 0.9, ease: easeLuxe }}
-          className="max-w-xl"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.15}
+          onDragEnd={(_, info) => {
+            if (info.offset.x < -60) go(1);
+            else if (info.offset.x > 60) go(-1);
+          }}
         >
-          <p className="text-2xs font-medium uppercase tracking-luxe text-brass-soft">
-            The Winter Heritage Collection
-          </p>
-          <h1 className="mt-5 font-serif text-display-sm font-light leading-[1.02] md:text-display-md lg:text-display-lg">
-            The architecture of eastern menswear
-          </h1>
-          <p className="mt-5 max-w-md text-base leading-relaxed text-sand-50/80">
-            Heritage tailoring and considered fabrics, cut for a modern
-            silhouette. Handmade in Pakistan, made to be lived in.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild size="xl" variant="brass">
-              <Link href="/collections/winter-heritage">Shop the Collection</Link>
-            </Button>
-            <Button
-              asChild
-              size="xl"
-              variant="outline"
-              className="border-sand-50/30 bg-transparent text-sand-50 hover:bg-sand-50 hover:text-charcoal-950"
-            >
-              <Link href="/shop">Explore All</Link>
-            </Button>
-          </div>
+          <Image
+            src={slide.src}
+            alt={slide.alt}
+            fill
+            priority={index === 0}
+            sizes="100vw"
+            className={slide.imageClassName}
+            draggable={false}
+          />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Shared CTA */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex justify-center pb-20">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: easeLuxe }}
+          className="pointer-events-auto"
+        >
+          <Button asChild size="xl" variant="brass">
+            <a href="#new-arrivals">Shop Mehrab Essentials</a>
+          </Button>
         </motion.div>
       </div>
 
-      {/* Scroll cue */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.8 }}
-        className="absolute inset-x-0 bottom-6 hidden justify-center md:flex"
+      {/* Arrows */}
+      <button
+        type="button"
+        aria-label="Previous slide"
+        onClick={() => go(-1)}
+        className="absolute left-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-sand-50/25 bg-charcoal-950/30 p-2.5 text-sand-50 backdrop-blur-sm transition hover:bg-charcoal-950/60 md:block"
       >
-        <span className="text-2xs uppercase tracking-luxe text-sand-50/60">
-          Scroll to discover
-        </span>
-      </motion.div>
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+      <button
+        type="button"
+        aria-label="Next slide"
+        onClick={() => go(1)}
+        className="absolute right-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-sand-50/25 bg-charcoal-950/30 p-2.5 text-sand-50 backdrop-blur-sm transition hover:bg-charcoal-950/60 md:block"
+      >
+        <ChevronRight className="h-5 w-5" />
+      </button>
+
+      {/* Dots */}
+      <div className="absolute inset-x-0 bottom-8 z-10 flex justify-center gap-2">
+        {slides.map((s, i) => (
+          <button
+            key={s.id}
+            type="button"
+            aria-label={`Go to slide ${i + 1}`}
+            aria-current={i === index}
+            onClick={() => setIndex(i)}
+            className={cn(
+              "h-1.5 rounded-full transition-all duration-500",
+              i === index ? "w-8 bg-brass-soft" : "w-3 bg-sand-50/40 hover:bg-sand-50/70",
+            )}
+          />
+        ))}
+      </div>
     </section>
   );
 }

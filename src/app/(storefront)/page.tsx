@@ -25,6 +25,7 @@ export default async function HomePage() {
     <>
       <Hero />
       <ProductGridSection
+        id="new-arrivals"
         eyebrow="Just Landed"
         title="New Arrivals"
         description="The latest additions to the MEHRAB line, fresh from the atelier."
